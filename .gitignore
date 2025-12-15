@@ -1,0 +1,13 @@
+# Google credentials
+credentials.json
+token.json
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment files
+.vscode
+.github
