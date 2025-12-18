@@ -4,9 +4,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-# Define scopes here or pass them as needed
-# Example: read-only access to contacts (People API)
-SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CREDENTIALS_FILE = os.path.join(BASE_DIR, 'credentials.json')
