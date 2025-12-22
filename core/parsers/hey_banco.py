@@ -13,6 +13,7 @@ class HeyBancoParser(BaseBankParser):
     
     SPEI_RECEPTION = 'Recepción de transferencia nacional SPEI'
     SPEI_OUTGOING = 'Banca Electrónica Hey, Solicitud de Transferencia Nacional SPEI.'
+    CREDIT_CARD_PAYMENT = 'Banca Electrónica Hey, Solicitud de pago de Tarjeta Hey'
     
     def parse(self, email_message) -> Transaction | None:
         
@@ -29,7 +30,10 @@ class HeyBancoParser(BaseBankParser):
         if self.SPEI_OUTGOING in subject:
             tx = self._parse_outgoing_transfer(body)
             return tx
-            
+        
+        if self.CREDIT_CARD_PAYMENT in subject:
+            tx = self._parse_credit_card_payment(body)
+            return tx
         
     def _parse_spei_reception(self, text) -> Transaction | None:
         amount = 0.0
@@ -125,6 +129,67 @@ class HeyBancoParser(BaseBankParser):
             amount=amount,
             description=description,
             type="spei_outgoing",
+            merchant=None,
+            reference=None,
+            status=""
+        )
+    def _parse_credit_card_payment(self, text) -> Transaction | None:
+        amount = 0.0
+        description = ""
+        datetime_obj = None
+
+        amount_match = re.search(r'Monto:[\s\S]*?\$\s*<span>([\d,]+\.\d{2})</span>', text, re.IGNORECASE | re.DOTALL)
+        if amount_match:
+            try:
+                amount = float(amount_match.group(1).replace(',', ''))
+            except ValueError:
+                print(f"Failed to parse amount: {amount_match.group(1)}")
+                return None
+
+        description_match = re.search(r'Descripci&oacute;n:[\s\S]*?<span>([^<]+)</span>', text, re.IGNORECASE | re.DOTALL)
+        if description_match:
+            description = description_match.group(1).strip()
+        
+        date_match = re.search(r'Fecha\s+de\s+solicita.*?<\s*span[^>]*>\s*(.+?)\s*</span>', text, re.IGNORECASE | re.DOTALL)
+        if date_match:
+            date_str = date_match.group(1).strip()
+            # Normalize Spanish months and AM/PM to English equivalents that dateutil understands
+            month_map = {
+                'enero': 'January',
+                'febrero': 'February',
+                'marzo': 'March',
+                'abril': 'April',
+                'mayo': 'May',
+                'junio': 'June',
+                'julio': 'July',
+                'agosto': 'August',
+                'septiembre': 'September',
+                'octubre': 'October',
+                'noviembre': 'November',
+                'diciembre': 'December',
+            }
+
+            # Replace Spanish month with English
+            normalized_date_str = date_str
+            for spanish, english in month_map.items():
+                normalized_date_str = normalized_date_str.replace(spanish, english)
+                normalized_date_str = normalized_date_str.replace(spanish.capitalize(), english)
+
+            # Normalize "a. m." and "p. m." to "AM" / "PM"
+            normalized_date_str = normalized_date_str.replace('a. m.', 'AM').replace('p. m.', 'PM')
+
+            try:
+                datetime_obj = date_parser(normalized_date_str, dayfirst=True)
+            except Exception as e:
+                print(f"Failed to parse date (even after normalization): {date_str} -> {e}")
+                datetime_obj = None
+                
+        return Transaction(
+            bank_name=self.bank_name,
+            date=datetime_obj,
+            amount=amount,
+            description=description,
+            type="credit_card_payment",
             merchant=None,
             reference=None,
             status=""
