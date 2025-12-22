@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil.parser import parse as date_parser
 from .base_parser import BaseBankParser
 from models.transaction import Transaction
-
+from unidecode import unidecode
 
 
 class HeyBancoParser(BaseBankParser):
@@ -202,7 +202,7 @@ class HeyBancoParser(BaseBankParser):
         amount = 0.0
         description = ""
         datetime_obj = None
-        
+        transaction_type = ""
         rejected_match = re.search(r'La compra que realizaste fue rechazada por Fondos Insuficientes', text)
         if rejected_match:
             return None
@@ -227,13 +227,23 @@ class HeyBancoParser(BaseBankParser):
                 datetime_obj =  date_parser(cleaned, dayfirst=True)
             except Exception as e:
                 print(f"Failed to parse date: {date_str} -> {e}")
+                
+        card_type_match = re.search(r'con tu <b>(Credito|Debito|Crédito|Débito|Cr&eacute;dito|D&eacute;bito)</b>', text)
+        if card_type_match:
+            print(card_type_match.group(1).strip().lower())
+            card = unidecode(card_type_match.group(1).strip().lower())
+            
+            if card == 'debito':
+                transaction_type = "debit_card_purchase"
+            if card == 'credito':
+                transaction_type = "credit_card_purchase"
         
         return Transaction(
             bank_name=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
-            type="credit_card_purchase",
+            type=transaction_type,
             merchant=None,
             reference=None,
             status=""
