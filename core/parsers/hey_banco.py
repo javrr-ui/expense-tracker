@@ -21,7 +21,6 @@ class HeyBancoParser(BaseBankParser):
         _from = email_message.get('from','')
         body = email_message.get('body_html', '')
 
-        # print(body)
         
         if self.SPEI_RECEPTION in subject:
             tx = self._parse_spei_reception(body)
