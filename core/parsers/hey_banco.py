@@ -47,7 +47,7 @@ class HeyBancoParser(BaseBankParser):
         amount_match = re.search(r'Cantidad\s*<br\s*/?>\s*<span\b[^>]*>([0-9]+(?:\.[0-9]+)?)</span>', text)
         
         if amount_match:
-            amount = amount_match.group(1)
+            amount = amount = float(amount_match.group(1).replace(',', ''))
             
         description_match = re.search(r'Concepto\s+pago\s*:\s*<br\s*/?>\s*<span\b[^>]*>([^<]+)</span>', text)
         if description_match:
