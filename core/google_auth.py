@@ -1,5 +1,7 @@
 # auth.py
 import os.path
+import logging
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -10,13 +12,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CREDENTIALS_FILE = os.path.join(BASE_DIR, 'credentials.json')
 TOKEN_FILE = os.path.join(BASE_DIR, 'token.json')
 
+logger = logging.getLogger("expense_tracker")
+
 def get_credentials(scopes=None):
     """
     Performs Google OAuth 2.0 authentication and confirms success.
     Prints a clear message if connected successfully.
     Returns credentials if successful (for future use).
     """
-    print("Starting Google authentication...")
+    logger.info("Starting Google authentication")
 
     creds = None
 
@@ -27,18 +31,18 @@ def get_credentials(scopes=None):
     # If no valid credentials, start OAuth flow
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            print("Refreshing expired access token...")
+            logger.info("Refreshing expired access token")
             creds.refresh(Request())
         else:
-            print("No valid credentials found. Opening browser for login...")
+            logger.info("No valid credentials found. Opening browser for login")
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
 
         # Save new/updated token
         with open(TOKEN_FILE, 'w') as token:
             token.write(creds.to_json())
-        print(f"Token saved to {TOKEN_FILE}")
+        logger.info(f"Token saved to {TOKEN_FILE}")
 
-    print("✅ Google authentication successful!")
-    print("   You are now connected to your Google account.")
+    logger.info("Google authentication successful")
+    logger.info("You are now connected to your Google account.")
     return creds
