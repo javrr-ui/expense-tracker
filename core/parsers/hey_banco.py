@@ -57,6 +57,7 @@ class HeyBancoParser(BaseBankParser):
                 print(f"Error parseando fecha: {date_str} -> {e}")
             
         return Transaction(
+            bank_name=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
@@ -119,6 +120,7 @@ class HeyBancoParser(BaseBankParser):
                 datetime_obj = None
 
         return Transaction(
+            bank_name=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
