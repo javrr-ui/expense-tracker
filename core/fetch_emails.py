@@ -12,12 +12,13 @@ def get_message(service, msg_id):
     email_msg = email.message_from_bytes(msg_raw)
     return email_msg
 
-def parse_email(email_msg):
+def parse_email(email_msg, msg_id):
     """
     Parsea un mensaje de email de forma robusta, manejando diferentes encodings y multipart.
     Prioriza texto plano, luego HTML si no hay plano.
     """
     payload = {
+        'id': msg_id,
         'subject': email_msg.get('Subject', ''),
         'from': email_msg.get('From', ''),
         'to': email_msg.get('To', ''),
