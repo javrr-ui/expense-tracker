@@ -14,6 +14,7 @@ class HeyBancoParser(BaseBankParser):
     SPEI_RECEPTION = 'Recepción de transferencia nacional SPEI'
     SPEI_OUTGOING = 'Banca Electrónica Hey, Solicitud de Transferencia Nacional SPEI.'
     CREDIT_CARD_PAYMENT = 'Banca Electrónica Hey, Solicitud de pago de Tarjeta Hey'
+    CREDIT_CARD_PURCHASE = 'Servicio de Alertas HeyBanco'
     
     def parse(self, email_message) -> Transaction | None:
         
@@ -32,6 +33,10 @@ class HeyBancoParser(BaseBankParser):
         
         if self.CREDIT_CARD_PAYMENT in subject:
             tx = self._parse_credit_card_payment(body)
+            return tx
+        
+        if self.CREDIT_CARD_PURCHASE in subject:
+            tx = self._parse_credit_card_purchase(body)
             return tx
         
     def _parse_spei_reception(self, text) -> Transaction | None:
@@ -189,6 +194,46 @@ class HeyBancoParser(BaseBankParser):
             amount=amount,
             description=description,
             type="credit_card_payment",
+            merchant=None,
+            reference=None,
+            status=""
+        )
+    def _parse_credit_card_purchase(self, text) -> Transaction | None:
+        amount = 0.0
+        description = ""
+        datetime_obj = None
+        
+        rejected_match = re.search(r'La compra que realizaste fue rechazada por Fondos Insuficientes', text)
+        if rejected_match:
+            return None
+        
+        amount_match = re.search(r'Cantidad:[\s\S]*?<h4[^>]*>\s*\$?([\d,]+\.\d{2})\s*</h4>', text)
+        if amount_match:
+            try:
+                amount = float(amount_match.group(1).replace(',', ''))
+            except ValueError:
+                print(f"Failed to parse amount: {amount_match.group(1)}")
+                return None
+        
+        description_match = re.search(r'Comercio:[\s\S]*?<h4[^>]*>\s*([^<]+?)\s*</h4>', text)
+        if description_match:
+            description = description_match.group(1).strip()
+            
+        date_match = re.search(r'Fecha y hora de la transacci&oacute;n:[\s\S]*?<h4[^>]*>\s*(\d{1,2}/\d{1,2}/\d{4}\s*-\s*\d{2}:\d{2}\s*hrs)\s*</h4>', text)
+        if date_match:
+            date_str = date_match.group(1)
+            cleaned = date_str.replace('hrs', '').strip()
+            try:
+                datetime_obj =  date_parser(cleaned, dayfirst=True)
+            except Exception as e:
+                print(f"Failed to parse date: {date_str} -> {e}")
+        
+        return Transaction(
+            bank_name=self.bank_name,
+            date=datetime_obj,
+            amount=amount,
+            description=description,
+            type="credit_card_purchase",
             merchant=None,
             reference=None,
             status=""
