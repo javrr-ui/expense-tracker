@@ -12,7 +12,6 @@ class Transaction(BaseModel):
     status: str = "approved"
     
     def __str__(self) -> str:
-            """Representación legible para humanos (usada por print())"""
             date_str = self.date.strftime("%Y-%m-%d %H:%M:%S") if self.date else "None"
             amount_str = f"${self.amount:,.2f}"
             # Formato con separador de miles y 2 decimales (ajustado a español si quieres)
