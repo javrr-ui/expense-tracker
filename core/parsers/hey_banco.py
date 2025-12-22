@@ -35,7 +35,6 @@ class HeyBancoParser(BaseBankParser):
         
         if amount_match:
             amount = amount_match.group(1)
-            print(amount)
             
         description_match = re.search(r'Concepto\s+pago\s*:\s*<br\s*/?>\s*<span\b[^>]*>([^<]+)</span>', text)
         if description_match:
