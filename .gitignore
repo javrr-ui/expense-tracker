@@ -23,3 +23,4 @@ __pycache__/
 
 # Ignore HTML files saved from emails
 data/*.html
+data/*.txt
