@@ -19,6 +19,7 @@ __pycache__/
 
 # Ignore database files
 *.db
+*.db-journal
 
 # Ignore HTML files saved from emails
 data/*.html
