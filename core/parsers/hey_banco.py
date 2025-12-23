@@ -271,3 +271,9 @@ class HeyBancoParser(BaseBankParser):
             return True
         
         return False
+    
+    def __str__(self) -> str:
+        return "HeyBancoParser(SPEI transfers, card payments & purchases)"
+    
+    def __repr__(self) -> str:
+        return f"HeyBancoParser(bank_name='{self.bank_name}')"

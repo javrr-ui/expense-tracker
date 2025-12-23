@@ -96,3 +96,9 @@ class NubankParser(BaseBankParser):
         
         # Now parse safely
         return datetime.strptime(english_datetime_str, "%d/%b/%Y %H:%M")
+
+    def __str__(self):
+        return "NubankParser(SPEI transfers & credit card payments)"
+    
+    def __repr__(self) -> str:
+        return f"HeyBancoParser(bank_name='{self.bank_name}')"
