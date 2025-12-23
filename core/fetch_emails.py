@@ -1,5 +1,11 @@
 import base64
 import email
+from pathlib import Path
+import logging
+
+logger = logging.getLogger("expense_tracker")
+DATA_FOLDER = Path("data")
+DATA_FOLDER.mkdir(exist_ok=True)
 
 def list_messages(service, query=' ', max_results=10):
     response = service.users().messages().list(userId='me', q=query, maxResults=max_results).execute()
@@ -80,3 +86,38 @@ def _decode_payload(part):
 
     except Exception:
         return '[Error al decodificar el cuerpo del email]'
+    
+def save_email_body(email_message: dict, msg_id: str, *, prefer_html: bool = True) -> Path | None:
+    """
+    Saves the email body (HTML preferred, fallback to plain) to disk.
+    
+    Args:
+        email_message: Dict from parse_email() containing 'body_html' and/or 'body_plain'
+        msg_id: Gmail message ID (used as filename)
+        prefer_html: If True, save HTML if available; else save plain text
+    
+    Returns:
+        Path to saved file, or None if nothing was saved
+    """
+    body = None
+    extension = ".html"
+
+    if prefer_html and email_message.get('body_html'):
+        body = email_message['body_html']
+    elif email_message.get('body_plain'):
+        body = email_message['body_plain']
+        extension = ".txt"
+
+    if not body:
+        logger.debug(f"No body content to save for email {msg_id}")
+        return None
+
+    filename = DATA_FOLDER / f"{msg_id}{extension}"
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(body)
+        logger.debug(f"Saved email body to {filename}")
+        return filename
+    except Exception as e:
+        logger.error(f"Failed to save email {msg_id} to {filename}: {e}")
+        return None
