@@ -19,7 +19,6 @@ class HeyBancoParser(BaseBankParser):
     def parse(self, email_message) -> Transaction | None:
         
         subject = self._decode_subject(email_message.get('subject',''))
-        _from = email_message.get('from','')
         body = email_message.get('body_html', '')
 
         
