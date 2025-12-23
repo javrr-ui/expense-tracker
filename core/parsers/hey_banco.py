@@ -203,8 +203,8 @@ class HeyBancoParser(BaseBankParser):
         description = ""
         datetime_obj = None
         transaction_type = ""
-        rejected_match = re.search(r'La compra que realizaste fue rechazada por Fondos Insuficientes', text)
-        if rejected_match:
+        
+        if self.is_transaction_not_valid_or_email_not_supported(text):
             return None
         
         amount_match = re.search(r'Cantidad:[\s\S]*?<h4[^>]*>\s*\$?([\d,]+\.\d{2})\s*</h4>', text)
@@ -248,3 +248,26 @@ class HeyBancoParser(BaseBankParser):
             reference=None,
             status=""
         )
+        
+    def is_transaction_not_valid_or_email_not_supported(self, text: str) -> bool:
+        rejected_match = re.search(r'La compra que realizaste fue rechazada por Fondos Insuficientes', text)
+        if rejected_match:
+            return True
+
+        freezed_debit_card_match = re.search(r'¡Has bloqueado tu tarjeta de débito', text)
+        if freezed_debit_card_match:
+            return True
+        
+        credit_card_payment_failed_match = re.search(r'El pago que intentaste hacer hace un momento no ha sido procesado.', text)
+        if credit_card_payment_failed_match:
+            return True
+        
+        user_recover_match = re.search(r'Recuperación de usuario.',text)
+        if user_recover_match:
+            return True
+        
+        national_transfer_failed_match = re.search(r'No se ha podido realizar tu transferencia nacional.', text)
+        if national_transfer_failed_match:
+            return True
+        
+        return False
