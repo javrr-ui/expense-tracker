@@ -16,3 +16,6 @@ __pycache__/
 
 # Ignore log files
 *.log
+
+# Ignore database files
+*.db
