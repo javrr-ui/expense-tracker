@@ -1,6 +1,8 @@
 from .base_parser import BaseBankParser
 from models.transaction import Transaction
+import logging
 
+logger = logging.getLogger("expense_tracker")
 class NubankParser(BaseBankParser):
     bank_name = "nubank"
     
