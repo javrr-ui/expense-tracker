@@ -116,7 +116,7 @@ def save_email_body(email_message: dict, msg_id: str, *, prefer_html: bool = Tru
     try:
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(body)
-        logger.debug(f"Saved email body to {filename}")
+
         return filename
     except Exception as e:
         logger.error(f"Failed to save email {msg_id} to {filename}: {e}")
