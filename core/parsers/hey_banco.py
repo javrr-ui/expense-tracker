@@ -272,6 +272,18 @@ class HeyBancoParser(BaseBankParser):
         if national_transfer_failed_match:
             return True
         
+        invalid_cvv_match = re.search(r'La compra que realizaste fue rechazada por CVV Inválido', text)
+        if invalid_cvv_match:
+            return True
+        
+        virtual_card_expired_match = re.search(r'Tu tarjeta virtual tiene nueva fecha de vencimiento', text)
+        if virtual_card_expired_match:
+            return True
+        
+        renewal_notice_match = re.search(r'Tu fecha de vencimiento se renovará', text)
+        if renewal_notice_match:
+            return True
+
         return False
     
     def __str__(self) -> str:
