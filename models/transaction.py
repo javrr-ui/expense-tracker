@@ -1,15 +1,16 @@
 
 from datetime import datetime
 from pydantic import BaseModel
+from typing import Literal
 
 from constants.banks import SupportedBanks
 
 class Transaction(BaseModel):
     date: datetime | None
-    bank_name: SupportedBanks
+    source: SupportedBanks
     amount: float
     description: str
-    type: str
+    type: Literal["expense", "income"]
     merchant: str | None = None
     reference: str | None = None
     status: str = "approved"
@@ -20,7 +21,7 @@ class Transaction(BaseModel):
             # Formato con separador de miles y 2 decimales (ajustado a español si quieres)
             
             return (
-                f"  Banco      : {self.bank_name}\n"
+                f"  Banco      : {self.source}\n"
                 f"  Transacción: {self.description}\n"
                 f"  Fecha      : {date_str}\n"
                 f"  Monto      : {amount_str}\n"

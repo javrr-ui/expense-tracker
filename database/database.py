@@ -14,6 +14,11 @@ class Database:
             logger.debug("Foreign key support enabled")
             
             self.cursor.executescript('''
+                CREATE TABLE IF NOT EXISTS sources (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT UNIQUE NOT NULL
+                );
+
                 CREATE TABLE IF NOT EXISTS categories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT UNIQUE NOT NULL
@@ -32,9 +37,13 @@ class Database:
                     email_id TEXT UNIQUE,
                     date TEXT NOT NULL,
                     amount REAL NOT NULL,
+                    source_id INTEGER NOT NULL,
+                    type TEXT NOT NULL CHECK(type IN ('expense', 'income')),
                     description TEXT,
                     category_id INTEGER,
                     subcategory_id INTEGER,
+                    
+                    FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE RESTRICT,
                     FOREIGN KEY (category_id) REFERENCES categories(id),
                     FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
                 );
@@ -52,7 +61,7 @@ class Database:
     def __enter__(self):
         return self
     
-    def add_transaction(self, date: str, amount: float, email_id: str, description: str = None,category_name: str = None, subcategory_name: str = None):
+    def add_transaction(self, date: str, amount: float, email_id: str, source: str, type: str, description: str = None,category_name: str = None, subcategory_name: str = None):
         """
         Add a new transaction to the database
 
@@ -66,15 +75,20 @@ class Database:
         Returns:
             int: The ID of the new transaction
         """
+        
         try:
             category_id = None
             subcategory_id = None
             
+            self.cursor.execute("INSERT OR IGNORE INTO sources (name) VALUES (?)", (source,))
+            self.cursor.execute("SELECT id FROM sources WHERE name = ?", (source,))
+            source_id = self.cursor.fetchone()[0]
+            
             self.cursor.execute("""
                 INSERT INTO transactions
-                (date, amount, description, category_id, subcategory_id, email_id)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (date, amount, description, category_id, subcategory_id, email_id))
+                (date, amount, description, category_id, subcategory_id, email_id, source_id, type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (date, amount, description, category_id, subcategory_id, email_id, source_id, type))
             
             transaction_id = self.cursor.lastrowid
             self.conn.commit()

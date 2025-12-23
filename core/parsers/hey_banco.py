@@ -65,14 +65,14 @@ class HeyBancoParser(BaseBankParser):
                 print(f"Error parseando fecha: {date_str} -> {e}")
             
         return Transaction(
-            bank_name=self.bank_name,
+            source=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
-            type="spei_reception",
             merchant=None,
             reference=None,
-            status=""
+            status="",
+            type="income"
         )
 
     def _parse_outgoing_transfer(self, text) -> Transaction | None:
@@ -128,14 +128,14 @@ class HeyBancoParser(BaseBankParser):
                 datetime_obj = None
 
         return Transaction(
-            bank_name=self.bank_name,
+            source=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
-            type="spei_outgoing",
             merchant=None,
             reference=None,
-            status=""
+            status="",
+            type="expense"
         )
     def _parse_credit_card_payment(self, text) -> Transaction | None:
         amount = 0.0
@@ -189,14 +189,14 @@ class HeyBancoParser(BaseBankParser):
                 datetime_obj = None
                 
         return Transaction(
-            bank_name=self.bank_name,
+            source=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
-            type="credit_card_payment",
             merchant=None,
             reference=None,
-            status=""
+            status="",
+            type="expense"
         )
     def _parse_credit_card_purchase(self, text) -> Transaction | None:
         amount = 0.0
@@ -239,14 +239,14 @@ class HeyBancoParser(BaseBankParser):
                 transaction_type = "credit_card_purchase"
         
         return Transaction(
-            bank_name=self.bank_name,
+            source=self.bank_name,
             date=datetime_obj,
             amount=amount,
             description=description,
-            type=transaction_type,
             merchant=None,
             reference=None,
-            status=""
+            status="",
+            type="expense"
         )
         
     def is_transaction_not_valid_or_email_not_supported(self, text: str) -> bool:
