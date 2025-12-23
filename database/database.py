@@ -51,3 +51,51 @@ class Database:
         
     def __enter__(self):
         return self
+    
+    def add_transaction(self, date: str, amount: float, email_id: str, description: str = None,category_name: str = None, subcategory_name: str = None):
+        """
+        Add a new transaction to the database
+
+        Args:
+            date (str): Format 'YYYY-MM-DD HH:MM:SS'
+            amount (float): Positive float number
+            email_id (str): The email ID associated with the transaction
+            description (str, optional): Defaults to None.
+            category_name (str, optional): Defaults to None.
+            subcategory_name (str, optional): Defaults to None.
+        Returns:
+            int: The ID of the new transaction
+        """
+        try:
+            category_id = None
+            subcategory_id = None
+            
+            self.cursor.execute("""
+                INSERT INTO transactions
+                (date, amount, description, category_id, subcategory_id, email_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (date, amount, description, category_id, subcategory_id, email_id))
+            
+            transaction_id = self.cursor.lastrowid
+            self.conn.commit()
+            
+            logger.info(
+                f"Transaction added [ID: {transaction_id}] | "
+                f"{amount:+.2f} | {date} | {description or 'No description'} | "
+                f"Category: {category_name or 'None'} | Subcategory: {subcategory_name or 'None'}"
+            )
+            
+            return transaction_id
+        except sqlite3.IntegrityError as e:
+            if email_id and "UNIQUE constraint failed: transactions.email_id" in str(e):
+                logger.warning(f"Skipped duplicate transaction (email_id: {email_id})")
+                self.conn.rollback()
+                return None  # or raise if you prefer strict mode
+            else:
+                logger.error(f"Integrity error adding transaction: {e}")
+                self.conn.rollback()
+                raise    
+        except sqlite3.Error as e:
+            logger.error(f"Database error adding transaction: {e}")
+            self.conn.rollback()
+            raise
