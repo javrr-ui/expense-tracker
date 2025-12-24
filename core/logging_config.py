@@ -9,11 +9,12 @@ def setup_logging(
     log_file: str = 'expense_tracker.log',
     max_bytes: int = 5 * 1024 * 1024,
     backup_count: int = 3
-):
-    if logging.getLogger('expense_tracker').handlers:
-        return
-    
+)-> logging.Logger:
     logger = logging.getLogger('expense_tracker')
+
+    if logger.handlers:
+        return logger
+    
     logger.setLevel(level)
     logger.propagate = False
     
