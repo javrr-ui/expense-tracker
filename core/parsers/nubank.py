@@ -1,5 +1,6 @@
 from .base_parser import BaseBankParser
 from models.transaction import Transaction
+from constants.banks import SupportedBanks
 import logging
 import re
 from datetime import datetime
@@ -13,7 +14,7 @@ SPANISH_TO_ENGLISH_MONTH = {
 }
 
 class NubankParser(BaseBankParser):
-    bank_name = "nubank"
+    bank_name = SupportedBanks.NUBANK
     
     CREDIT_CARD_PAYMENT_SUBJECT = "¡Recibimos tu pago!"
     SPEI_OUTGOING_SUBJECT = "Tu transferencia fue exitosa"
