@@ -7,6 +7,7 @@ from constants.banks import SupportedBanks
 
 class Transaction(BaseModel):
     date: datetime | None
+    email_id: str
     source: SupportedBanks
     amount: float
     description: str

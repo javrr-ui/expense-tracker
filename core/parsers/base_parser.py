@@ -7,7 +7,7 @@ class BaseBankParser(ABC):
     bank_name = "generic"
 
     @abstractmethod
-    def parse(self, email_message) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> Transaction | None:
         pass
     
     def _decode_subject(self, subject: str) -> str:

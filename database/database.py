@@ -63,7 +63,7 @@ class Database:
     def __enter__(self):
         return self
     
-    def add_transaction(self, transaction: Transaction, email_id: str ) -> int | None:
+    def add_transaction(self, transaction: Transaction) -> int | None:
         """
         Add a new transaction to the database
 
@@ -90,7 +90,7 @@ class Database:
                 INSERT INTO transactions
                 (date, amount, description, category_id, subcategory_id, email_id, source_id, type)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (transaction.date, transaction.amount, transaction.description, category_id, subcategory_id, email_id, source_id, transaction.type))
+            """, (transaction.date, transaction.amount, transaction.description, category_id, subcategory_id, transaction.email_id, source_id, transaction.type))
             
             transaction_id = self.cursor.lastrowid
             self.conn.commit()
@@ -103,13 +103,13 @@ class Database:
             
             return transaction_id
         except sqlite3.IntegrityError as e:
-            if email_id and "UNIQUE constraint failed: transactions.email_id" in str(e):
-                logger.warning(f"Skipped duplicate transaction (email_id: {email_id})")
+            if transaction.email_id and "UNIQUE constraint failed: transactions.email_id" in str(e):
+                logger.warning(f"Skipped duplicate transaction (email_id: {transaction.email_id})")
                 self.conn.rollback()
                 return None  # or raise if you prefer strict mode
             else:
                 logger.error(f"Integrity error adding transaction: {e}")
-                logger.error(f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {email_id}, source: {transaction.source}, type: {type}")
+                logger.error(f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {transaction.email_id}, source: {transaction.source}, type: {type}")
                 self.conn.rollback()
                 return None   
         except sqlite3.Error as e:

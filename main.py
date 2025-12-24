@@ -48,9 +48,9 @@ def main():
             logger.warning(f"No parser found for email from: {from_header}")
             continue
          
-        transaction = parser.parse(email_message)
+        transaction = parser.parse(email_message, msg_id)
         if transaction:
-            db.add_transaction(transaction, msg_id)
+            db.add_transaction(transaction)
 
     db.close()
     logger.info("Process completed")

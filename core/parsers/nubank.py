@@ -19,24 +19,24 @@ class NubankParser(BaseBankParser):
     CREDIT_CARD_PAYMENT_SUBJECT = "¡Recibimos tu pago!"
     SPEI_OUTGOING_SUBJECT = "Tu transferencia fue exitosa"
     SPEI_RECEPTION_SUBJECT = "¡Recibiste una transferencia!"
-    def parse(self, email_message) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> Transaction | None:
         subject = self._decode_subject(email_message.get('subject',''))
         body = email_message.get('body_plain', '')
 
         
         if self.CREDIT_CARD_PAYMENT_SUBJECT in subject:
-            tx = self._parse_credit_card_payment(body)
+            tx = self._parse_credit_card_payment(body, email_id)
             return tx
 
         if self.SPEI_OUTGOING_SUBJECT in subject:
-            tx = self._parse_outgoing_transfer(body)
+            tx = self._parse_outgoing_transfer(body, email_id)
             return tx
         
         if self.SPEI_RECEPTION_SUBJECT in subject:
-            tx = self._parse_spei_reception(body)
+            tx = self._parse_spei_reception(body, email_id)
             return tx
         
-    def _parse_outgoing_transfer(self, body_html: str) -> Transaction | None:
+    def _parse_outgoing_transfer(self, body_html: str, email_id: str) -> Transaction | None:
         amount = 0.0
         description = "Transferencia"
         datetime_obj = None
@@ -64,6 +64,7 @@ class NubankParser(BaseBankParser):
         
         return Transaction(
             source=self.bank_name,
+            email_id=email_id,
             date=datetime_obj,
             amount=amount,
             description=description,
@@ -72,10 +73,12 @@ class NubankParser(BaseBankParser):
             type="expense"
         )
     
-    def _parse_credit_card_payment(self, body_html: str) -> Transaction | None:
+    def _parse_credit_card_payment(self, body_html: str, email_id: str) -> Transaction | None:
+        logger.info(f"Credit card payment parsing not implemented yet. Email ID: {email_id}")
         return None
     
-    def _parse_spei_reception(self, body_html: str) -> Transaction | None:
+    def _parse_spei_reception(self, body_html: str, email_id: str) -> Transaction | None:
+        logger.info(f"SPEI reception parsing not implemented yet. Email ID: {email_id}")
         return None
         
     def parse_nubank_datetime(self, datetime_str):

@@ -17,7 +17,7 @@ class HeyBancoParser(BaseBankParser):
     CREDIT_CARD_PAYMENT = 'Banca Electrónica Hey, Solicitud de pago de Tarjeta Hey'
     CREDIT_CARD_PURCHASE = 'Servicio de Alertas HeyBanco'
     
-    def parse(self, email_message) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> Transaction | None:
         
         subject = self._decode_subject(email_message.get('subject',''))
         body = email_message.get('body_html', '')
@@ -26,22 +26,22 @@ class HeyBancoParser(BaseBankParser):
             body = email_message.get('body_plain', '')
         
         if self.SPEI_RECEPTION in subject:
-            tx = self._parse_spei_reception(body)
+            tx = self._parse_spei_reception(body, email_id)
             return tx
 
         if self.SPEI_OUTGOING in subject:
-            tx = self._parse_outgoing_transfer(body)
+            tx = self._parse_outgoing_transfer(body, email_id)
             return tx
         
         if self.CREDIT_CARD_PAYMENT in subject:
-            tx = self._parse_credit_card_payment(body)
+            tx = self._parse_credit_card_payment(body, email_id)
             return tx
         
         if self.CREDIT_CARD_PURCHASE in subject:
-            tx = self._parse_credit_card_purchase(body)
+            tx = self._parse_credit_card_purchase(body, email_id)
             return tx
         
-    def _parse_spei_reception(self, text) -> Transaction | None:
+    def _parse_spei_reception(self, text, email_id) -> Transaction | None:
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -68,6 +68,7 @@ class HeyBancoParser(BaseBankParser):
             
         return Transaction(
             source=self.bank_name,
+            email_id=email_id,
             date=datetime_obj,
             amount=amount,
             description=description,
@@ -77,7 +78,7 @@ class HeyBancoParser(BaseBankParser):
             type="income"
         )
 
-    def _parse_outgoing_transfer(self, text) -> Transaction | None:
+    def _parse_outgoing_transfer(self, text, email_id) -> Transaction | None:
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -131,6 +132,7 @@ class HeyBancoParser(BaseBankParser):
 
         return Transaction(
             source=self.bank_name,
+            email_id=email_id,
             date=datetime_obj,
             amount=amount,
             description=description,
@@ -139,7 +141,7 @@ class HeyBancoParser(BaseBankParser):
             status="",
             type="expense"
         )
-    def _parse_credit_card_payment(self, text) -> Transaction | None:
+    def _parse_credit_card_payment(self, text, email_id) -> Transaction | None:
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -192,6 +194,7 @@ class HeyBancoParser(BaseBankParser):
                 
         return Transaction(
             source=self.bank_name,
+            email_id=email_id,
             date=datetime_obj,
             amount=amount,
             description=description,
@@ -200,7 +203,7 @@ class HeyBancoParser(BaseBankParser):
             status="",
             type="expense"
         )
-    def _parse_credit_card_purchase(self, text) -> Transaction | None:
+    def _parse_credit_card_purchase(self, text, email_id) -> Transaction | None:
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -241,6 +244,7 @@ class HeyBancoParser(BaseBankParser):
         
         return Transaction(
             source=self.bank_name,
+            email_id=email_id,
             date=datetime_obj,
             amount=amount,
             description=description,
