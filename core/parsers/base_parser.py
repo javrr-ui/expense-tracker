@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from models.transaction import Transaction
 from email.header import decode_header
-import email.header
+
 class BaseBankParser(ABC):
     bank_name = "generic"
 
