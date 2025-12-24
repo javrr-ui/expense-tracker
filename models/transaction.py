@@ -11,6 +11,8 @@ class Transaction(BaseModel):
     amount: float
     description: str
     type: Literal["expense", "income"]
+    category_name: str = ""
+    subcategory_name: str = ""
     merchant: str | None = None
     reference: str | None = None
     status: str = "approved"
