@@ -1,6 +1,4 @@
 import re
-import email
-from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil.parser import parse as date_parser
 from .base_parser import BaseBankParser
