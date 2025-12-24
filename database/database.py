@@ -1,6 +1,7 @@
 import sqlite3
 import logging
 from datetime import datetime
+from models.transaction import Transaction
 
 logger = logging.getLogger("expense_tracker")
 
@@ -62,7 +63,7 @@ class Database:
     def __enter__(self):
         return self
     
-    def add_transaction(self, date: datetime | None, amount: float, email_id: str, source: str, type: str, description: str = "",category_name: str = "", subcategory_name: str = ""):
+    def add_transaction(self, transaction: Transaction, email_id: str ) -> int | None:
         """
         Add a new transaction to the database
 
@@ -81,23 +82,23 @@ class Database:
             category_id = None
             subcategory_id = None
             
-            self.cursor.execute("INSERT OR IGNORE INTO sources (name) VALUES (?)", (source,))
-            self.cursor.execute("SELECT id FROM sources WHERE name = ?", (source,))
+            self.cursor.execute("INSERT OR IGNORE INTO sources (name) VALUES (?)", (transaction.source,))
+            self.cursor.execute("SELECT id FROM sources WHERE name = ?", (transaction.source,))
             source_id = self.cursor.fetchone()[0]
             
             self.cursor.execute("""
                 INSERT INTO transactions
                 (date, amount, description, category_id, subcategory_id, email_id, source_id, type)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (date, amount, description, category_id, subcategory_id, email_id, source_id, type))
+            """, (transaction.date, transaction.amount, transaction.description, category_id, subcategory_id, email_id, source_id, transaction.type))
             
             transaction_id = self.cursor.lastrowid
             self.conn.commit()
             
             logger.info(
                 f"Transaction added [ID: {transaction_id}] | "
-                f"{amount:+.2f} | {date} | {description or 'No description'} | "
-                f"Category: {category_name or 'None'} | Subcategory: {subcategory_name or 'None'}"
+                f"{transaction.amount:+.2f} | {transaction.date} | {transaction.description or 'No description'} | "
+                f"Category: {transaction.category_name or 'None'} | Subcategory: {transaction.subcategory_name or 'None'}"
             )
             
             return transaction_id
@@ -108,7 +109,7 @@ class Database:
                 return None  # or raise if you prefer strict mode
             else:
                 logger.error(f"Integrity error adding transaction: {e}")
-                logger.error(f"Failed data - date: {date}, amount: {amount}, email_id: {email_id}, source: {source}, type: {type}")
+                logger.error(f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {email_id}, source: {transaction.source}, type: {type}")
                 self.conn.rollback()
                 return None   
         except sqlite3.Error as e:
