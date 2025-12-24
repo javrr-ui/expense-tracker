@@ -1,5 +1,6 @@
 import sqlite3
-import logging 
+import logging
+from datetime import datetime
 
 logger = logging.getLogger("expense_tracker")
 
@@ -61,7 +62,7 @@ class Database:
     def __enter__(self):
         return self
     
-    def add_transaction(self, date: str, amount: float, email_id: str, source: str, type: str, description: str = None,category_name: str = None, subcategory_name: str = None):
+    def add_transaction(self, date: datetime | None, amount: float, email_id: str, source: str, type: str, description: str = "",category_name: str = "", subcategory_name: str = ""):
         """
         Add a new transaction to the database
 
