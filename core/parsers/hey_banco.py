@@ -5,13 +5,14 @@ from datetime import datetime
 from dateutil.parser import parse as date_parser
 from .base_parser import BaseBankParser
 from models.transaction import Transaction
+from constants.banks import SupportedBanks
 from unidecode import unidecode
 import logging 
 
 logger = logging.getLogger("expense_tracker")
 
 class HeyBancoParser(BaseBankParser):
-    bank_name = "hey_banco"
+    bank_name = SupportedBanks.HEY_BANCO
     
     SPEI_RECEPTION = 'Recepción de transferencia nacional SPEI'
     SPEI_OUTGOING = 'Banca Electrónica Hey, Solicitud de Transferencia Nacional SPEI.'
