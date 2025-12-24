@@ -101,4 +101,4 @@ class NubankParser(BaseBankParser):
         return "NubankParser(SPEI transfers & credit card payments)"
     
     def __repr__(self) -> str:
-        return f"HeyBancoParser(bank_name='{self.bank_name}')"
+        return f"NubankParser(bank_name='{self.bank_name}')"
