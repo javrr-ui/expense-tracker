@@ -33,7 +33,7 @@ class NubankParser(BaseBankParser):
             return tx
         
         if self.SPEI_RECEPTION_SUBJECT in subject:
-            tx = self._parse_spei_reception(body, email_id)
+            tx = self._parse_spei_reception(body, date, email_id)
             return tx
         
     def _parse_outgoing_transfer(self, body_html: str, email_id: str) -> Transaction | None:
@@ -98,9 +98,30 @@ class NubankParser(BaseBankParser):
             type="expense"
         )
     
-    def _parse_spei_reception(self, body_html: str, email_id: str) -> Transaction | None:
-        logger.info(f"SPEI reception parsing not implemented yet. Email ID: {email_id}")
-        return None
+    def _parse_spei_reception(self, body_html: str, date: str, email_id: str) -> Transaction | None:
+        amount = 0.0
+        description: str = "Transferencia"
+        datetime_obj = None
+
+        amount_match = re.search(r'\$([\d,]+\.\d{2})', body_html)
+        if amount_match:
+            amount_str = amount_match.group(1).replace(',', '')
+            amount = float(amount_str)
+        
+        datetime_obj = self.parse_email_date(date)
+        if datetime_obj is None:
+            return None
+
+        return Transaction(
+            source=self.bank_name,
+            email_id=email_id,
+            date=datetime_obj,
+            amount=amount,
+            description=description,
+            merchant=None,
+            reference=None,
+            type="income"
+        )
         
     def parse_nubank_datetime(self, datetime_str):
         date_part, time_part = datetime_str.strip().split(" ")
