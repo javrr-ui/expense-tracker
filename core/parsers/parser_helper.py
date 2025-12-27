@@ -1,8 +1,8 @@
-from constants.banks import bank_emails
+import logging
+
+from constants.banks import SupportedBanks, bank_emails
 from core.parsers.hey_banco import HeyBancoParser
 from core.parsers.nubank import NubankParser
-from constants.banks import SupportedBanks
-import logging 
 
 logger = logging.getLogger("expense_tracker")
 

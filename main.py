@@ -1,12 +1,13 @@
-from core.google_auth import get_credentials
-from core.gmail_service import get_gmail_service
-from core.fetch_emails import get_message, list_messages, parse_email, save_email_body
-from constants.banks import SupportedBanks
-from database.database import Database
-from core.logging_config import setup_logging
-from core.parsers.parser_helper import ParserHelper 
-from constants.banks import bank_emails
 import logging
+
+from constants.banks import SupportedBanks, bank_emails
+from core.fetch_emails import (get_message, list_messages, parse_email,
+                               save_email_body)
+from core.gmail_service import get_gmail_service
+from core.google_auth import get_credentials
+from core.logging_config import setup_logging
+from core.parsers.parser_helper import ParserHelper
+from database.database import Database
 
 logger = setup_logging(level=logging.DEBUG)
 

@@ -1,5 +1,6 @@
-from typing import Literal
 from enum import StrEnum
+from typing import Literal
+
 
 class SupportedBanks(StrEnum):
     HEY_BANCO = "hey_banco"

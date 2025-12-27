@@ -1,7 +1,7 @@
 import base64
 import email
-from pathlib import Path
 import logging
+from pathlib import Path
 
 logger = logging.getLogger("expense_tracker")
 DATA_FOLDER = Path("data")

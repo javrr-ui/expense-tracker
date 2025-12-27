@@ -1,9 +1,11 @@
-from .base_parser import BaseBankParser
-from models.transaction import Transaction
-from constants.banks import SupportedBanks
 import logging
 import re
 from datetime import datetime
+
+from constants.banks import SupportedBanks
+from models.transaction import Transaction
+
+from .base_parser import BaseBankParser
 
 logger = logging.getLogger("expense_tracker")
 

@@ -1,9 +1,11 @@
 
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Literal
 
+from pydantic import BaseModel
+
 from constants.banks import SupportedBanks
+
 
 class Transaction(BaseModel):
     date: datetime | None
