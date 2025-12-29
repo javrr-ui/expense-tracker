@@ -34,27 +34,33 @@ def main():
     
     query = build_global_query()
 
-    messages = list_messages(service, query=query, max_results=120)
-    for msg_meta in messages:
-        msg_id = msg_meta['id']
-        msg = get_message(service, msg_id)
-        email_message = parse_email(msg, msg_id)
-        
-        save_email_body(email_message, msg_id)
-        
-        from_header = email_message.get('from', '')
-        parser = ParserHelper.get_parser_for_email(from_header)
-        
-        if parser is None:
-            logger.warning(f"No parser found for email from: {from_header}")
-            continue
-         
-        transaction = parser.parse(email_message, msg_id)
-        if transaction:
-            db.add_transaction(transaction)
+    try:
+        for msg_meta in list_messages(service, query=query):
+            msg_id = msg_meta['id']
 
-    db.close()
-    logger.info("Process completed")
+            msg = get_message(service, msg_id)
+            email_message = parse_email(msg, msg_id)
+            
+            save_email_body(email_message, msg_id)
+            
+            from_header = email_message.get('from', '')
+            parser = ParserHelper.get_parser_for_email(from_header)
+            
+            if parser is None:
+                logger.warning(f"No parser found for email from: {from_header}")
+                continue
+            
+            transaction = parser.parse(email_message, msg_id)
+            if transaction:
+                db.add_transaction(transaction)
+            
+        logger.info("Process completed")
+    except Exception as e:
+        logger.error(f"An error occurred: {e}", exc_info=True)
+        raise
+    finally:
+        db.close()
+        
 
 if __name__ == '__main__':
     main()

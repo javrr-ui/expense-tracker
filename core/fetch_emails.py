@@ -7,10 +7,23 @@ logger = logging.getLogger("expense_tracker")
 DATA_FOLDER = Path("data")
 DATA_FOLDER.mkdir(exist_ok=True)
 
-def list_messages(service, query=' ', max_results=10):
-    response = service.users().messages().list(userId='me', q=query, maxResults=max_results).execute()
-    messages = response.get('messages', [])
-    return messages
+def list_messages(service, query: str =' ', page_token: str | None = None):
+    
+    while True:
+        response = service.users().messages().list(
+            userId='me', 
+            q=query, 
+            maxResults=500,
+            pageToken=page_token
+        ).execute()
+        
+        messages = response.get('messages', [])
+        for msg in messages:
+            yield msg
+        
+        page_token = response.get('nextPageToken')
+        if not page_token:
+            break
 
 def get_message(service, msg_id):
     msg = service.users().messages().get(userId='me', id=msg_id, format='raw').execute()
