@@ -48,6 +48,7 @@ def main():
             
             if parser is None:
                 logger.warning(f"No parser found for email from: {from_header}")
+                logger.warning(f"message_id: {msg_id}")
                 continue
             
             transaction = parser.parse(email_message, msg_id)
