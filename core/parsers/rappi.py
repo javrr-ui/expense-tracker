@@ -22,7 +22,8 @@ class RappiParser(BaseBankParser):
     bank_name = SupportedBanks.RAPPI
     
     CREDIT_CARD_PAYMENT_SUBJECT = "Recibimos el pago de tu Rappicard"
-    CREDIT_CARD_PAYMENT_SUBJECT_OLD = "Comprobante de pago"
+    CREDIT_CARD_PAYMENT_WITH_CASHBACK_SUBJECT = "¡Gracias por pagar tu Rappicard y ganar cashback!"
+    CREDIT_CARD_PAYMENT_SUBJECT_OLD = "Recibimos el abono de tu Rappicard"
     
     def parse(self, email_message, email_id: str) -> Transaction | None:
         subject = self._decode_subject(email_message.get('subject',''))
@@ -37,6 +38,10 @@ class RappiParser(BaseBankParser):
             return tx
         
         if self.CREDIT_CARD_PAYMENT_SUBJECT_OLD in subject:
+            tx = self._parse_credit_card_payment(body, email_id)
+            return tx
+    
+        if self.CREDIT_CARD_PAYMENT_WITH_CASHBACK_SUBJECT in subject:
             tx = self._parse_credit_card_payment(body, email_id)
             return tx
     
