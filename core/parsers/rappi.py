@@ -34,7 +34,6 @@ class RappiParser(BaseBankParser):
     def parse(self, email_message, email_id: str) -> Transaction | None:
         subject = self._decode_subject(email_message.get("subject", ""))
         body = email_message.get("body_plain", "")
-        date = email_message.get("date", "")
 
         if not body:
             body = email_message.get("body_plain", "")
