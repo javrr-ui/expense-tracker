@@ -2,6 +2,12 @@ from enum import StrEnum
 
 
 class SupportedBanks(StrEnum):
+    """Supported bank identifiers used throughout the expense tracker.
+
+    This enum defines string-based identifiers for each supported financial institution.
+    Using StrEnum ensures type safety while allowing string comparisons and serialization.
+    """
+
     HEY_BANCO = "hey_banco"
     NUBANK = "nubank"
     RAPPI = "rappi"
