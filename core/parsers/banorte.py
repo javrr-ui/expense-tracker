@@ -86,7 +86,7 @@ class BanorteParser(BaseBankParser):
                 full_datetime_str = f"{day} {month_en} {year} {time}"
                 datetime_obj = datetime.strptime(full_datetime_str, "%d %b %Y %H:%M:%S")
             except Exception as e:
-                logger.error(f"Error parsing date '{date_str}': {e}")
+                logger.error("Error parsing date '%s': %s", date_str, e)
 
         return Transaction(
             source=self.bank_name,
