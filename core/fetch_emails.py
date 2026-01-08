@@ -15,7 +15,7 @@ DATA_FOLDER.mkdir(exist_ok=True)
 
 
 def list_messages(service, query: str = " ", page_token: str | None = None):
-
+    """Yield all message metadata matching the query, handling pagination automatically."""
     while True:
         response = (
             service.users()
@@ -34,6 +34,7 @@ def list_messages(service, query: str = " ", page_token: str | None = None):
 
 
 def get_message(service, msg_id):
+    """Retrieve a full email mesage in raw format and parse it into an email.message object."""
     msg = service.users().messages().get(userId="me", id=msg_id, format="raw").execute()
     msg_raw = base64.urlsafe_b64decode(msg["raw"])
     email_msg = email.message_from_bytes(msg_raw)
