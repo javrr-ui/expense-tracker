@@ -131,13 +131,13 @@ class Database:
                 )
                 self.conn.rollback()
                 return None  # or raise if you prefer strict mode
-            else:
-                logger.error(f"Integrity error adding transaction: {e}")
-                logger.error(
-                    f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {transaction.email_id}, source: {transaction.source}, type: {type}"
-                )
-                self.conn.rollback()
-                return None
+
+            logger.error(f"Integrity error adding transaction: {e}")
+            logger.error(
+                f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {transaction.email_id}, source: {transaction.source}, type: {type}"
+            )
+            self.conn.rollback()
+            return None
         except sqlite3.Error as e:
             logger.error(f"Database error adding transaction: {e}")
             self.conn.rollback()
