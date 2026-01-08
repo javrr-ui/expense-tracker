@@ -6,7 +6,7 @@ from datetime import datetime
 from constants.banks import SupportedBanks
 from models.transaction import Transaction
 
-from .base_parser import BaseBankParser
+from core.parsers.base_parser import BaseBankParser
 
 logger = logging.getLogger("expense_tracker")
 
