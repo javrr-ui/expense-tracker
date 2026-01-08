@@ -1,3 +1,11 @@
+"""Constants related to supported banks and their notification email addresses.
+
+This module defines:
+- SupportedBanks: An enum of all banks currently supported by the expense tracker.
+- bank_emails: A mapping from each bank to the known email addresses used for transaction
+  notifications.
+"""
+
 from enum import StrEnum
 
 
