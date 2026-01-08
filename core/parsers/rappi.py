@@ -68,7 +68,7 @@ class RappiParser(BaseBankParser):
                     date_str = date_str.replace(es, en)
                 datetime_obj = datetime.strptime(date_str, "%d %b %Y")
             except Exception as e:
-                logger.error(f"Error parsing date '{date_str}': {e}")
+                logger.error("Error parsing date %s: %s", date_str, e)
 
         return Transaction(
             amount=amount,

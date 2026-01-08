@@ -49,8 +49,8 @@ def main():
             parser = ParserHelper.get_parser_for_email(from_header)
 
             if parser is None:
-                logger.warning(f"No parser found for email from: {from_header}")
-                logger.warning(f"message_id: {msg_id}")
+                logger.warning("No parser found for email from: %s", from_header)
+                logger.warning("message_id: %s", msg_id)
                 continue
 
             transaction = parser.parse(email_message, msg_id)
@@ -59,7 +59,7 @@ def main():
 
         logger.info("Process completed")
     except Exception as e:
-        logger.error(f"An error occurred: {e}", exc_info=True)
+        logger.error("An error occurred: %s", e, exc_info=True)
         raise
     finally:
         db.close()

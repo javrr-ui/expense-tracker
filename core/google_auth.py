@@ -46,7 +46,7 @@ def get_credentials(scopes=None):
         # Save new/updated token
         with open(TOKEN_FILE, "w") as token:
             token.write(creds.to_json())
-        logger.info(f"Token saved to {TOKEN_FILE}")
+        logger.info("Token saved to %s", TOKEN_FILE)
 
     logger.info("Google authentication successful")
     logger.info("You are now connected to your Google account.")
