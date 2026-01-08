@@ -25,8 +25,7 @@ def list_messages(service, query: str = " ", page_token: str | None = None):
         )
 
         messages = response.get("messages", [])
-        for msg in messages:
-            yield from msg
+        yield from messages
 
         page_token = response.get("nextPageToken")
         if not page_token:
