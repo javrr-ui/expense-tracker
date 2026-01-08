@@ -2,8 +2,6 @@ import logging
 import re
 from datetime import datetime
 
-from dateutil.parser import parse as date_parser
-from unidecode import unidecode
 
 from constants.banks import SupportedBanks
 from models.transaction import Transaction
