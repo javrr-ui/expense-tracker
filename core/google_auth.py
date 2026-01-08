@@ -19,7 +19,7 @@ TOKEN_FILE = os.path.join(BASE_DIR, "token.json")
 logger = logging.getLogger("expense_tracker")
 
 
-def get_credentials(scopes=None):
+def get_credentials(scopes=SCOPES):
     """
     Performs Google OAuth 2.0 authentication and confirms success.
     Prints a clear message if connected successfully.
@@ -31,7 +31,7 @@ def get_credentials(scopes=None):
 
     # Try to load existing token
     if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, scopes)
 
     # If no valid credentials, start OAuth flow
     if not creds or not creds.valid:
@@ -40,7 +40,7 @@ def get_credentials(scopes=None):
             creds.refresh(Request())
         else:
             logger.info("No valid credentials found. Opening browser for login")
-            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, scopes)
             creds = flow.run_local_server(port=0)
 
         # Save new/updated token
