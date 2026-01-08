@@ -44,7 +44,7 @@ def get_credentials(scopes=None):
             creds = flow.run_local_server(port=0)
 
         # Save new/updated token
-        with open(TOKEN_FILE, "w") as token:
+        with open(TOKEN_FILE, "w", encoding="utf-8") as token:
             token.write(creds.to_json())
         logger.info("Token saved to %s", TOKEN_FILE)
 
