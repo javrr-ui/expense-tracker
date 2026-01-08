@@ -4,6 +4,7 @@ from constants.banks import SupportedBanks, bank_emails
 from core.parsers.hey_banco import HeyBancoParser
 from core.parsers.nubank import NubankParser
 from core.parsers.rappi import RappiParser
+from core.parsers.banorte import BanorteParser
 
 logger = logging.getLogger("expense_tracker")
 
@@ -12,7 +13,7 @@ PARSERS = {
     SupportedBanks.NUBANK: NubankParser(),
     SupportedBanks.RAPPI: RappiParser(),
     # SupportedBanks.PAYPAL: PayPalParser(),
-    # SupportedBanks.BANORTE: BanorteParser(),
+    SupportedBanks.BANORTE: BanorteParser(),
 }
 
 class ParserHelper:
