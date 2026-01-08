@@ -19,12 +19,15 @@ TOKEN_FILE = os.path.join(BASE_DIR, "token.json")
 logger = logging.getLogger("expense_tracker")
 
 
-def get_credentials(scopes=SCOPES):
+def get_credentials(scopes=None):
     """
     Performs Google OAuth 2.0 authentication and confirms success.
     Prints a clear message if connected successfully.
     Returns credentials if successful (for future use).
     """
+    if scopes is None:
+        scopes = SCOPES
+
     logger.info("Starting Google authentication")
 
     creds = None
