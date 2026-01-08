@@ -8,10 +8,19 @@ class SupportedBanks(StrEnum):
     PAYPAL = "paypal"
     BANORTE = "banorte"
 
+
 bank_emails = {
-    SupportedBanks.HEY_BANCO: ['noreply@hey.inc', 'alertas@hey.inc', 'noreply@heybanco.com', 'alertas@heybanco.com'],
-    SupportedBanks.NUBANK: ['nu@nu.com.mx'],
-    SupportedBanks.RAPPI: ['rappi.nreply@rappi.com', 'no-reply@mailing.rappicard.com.mx'],
-    SupportedBanks.PAYPAL: ['service@paypal.com.mx'],
-    SupportedBanks.BANORTE: ['notificaciones@banorte.com']
+    SupportedBanks.HEY_BANCO: [
+        "noreply@hey.inc",
+        "alertas@hey.inc",
+        "noreply@heybanco.com",
+        "alertas@heybanco.com",
+    ],
+    SupportedBanks.NUBANK: ["nu@nu.com.mx"],
+    SupportedBanks.RAPPI: [
+        "rappi.nreply@rappi.com",
+        "no-reply@mailing.rappicard.com.mx",
+    ],
+    SupportedBanks.PAYPAL: ["service@paypal.com.mx"],
+    SupportedBanks.BANORTE: ["notificaciones@banorte.com"],
 }

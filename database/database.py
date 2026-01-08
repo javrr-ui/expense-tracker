@@ -6,17 +6,19 @@ from models.transaction import Transaction
 
 logger = logging.getLogger("expense_tracker")
 
+
 class Database:
-    def __init__(self, db_name='expenses.db'):
+    def __init__(self, db_name="expenses.db"):
         try:
             self.conn = sqlite3.connect(db_name)
             self.cursor = self.conn.cursor()
             logger.info(f"Successful connection to the database: {db_name}")
-            
-            self.cursor.execute('PRAGMA foreign_keys = ON;')
+
+            self.cursor.execute("PRAGMA foreign_keys = ON;")
             logger.debug("Foreign key support enabled")
-            
-            self.cursor.executescript('''
+
+            self.cursor.executescript(
+                """
                 CREATE TABLE IF NOT EXISTS sources (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT UNIQUE NOT NULL
@@ -50,20 +52,21 @@ class Database:
                     FOREIGN KEY (category_id) REFERENCES categories(id),
                     FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
                 );
-                        ''')
+                        """
+            )
             self.conn.commit()
             logger.info("Database tables ensured")
         except sqlite3.Error as e:
             logger.error(f"Database error: {e}")
             raise
-        
+
     def close(self):
         self.conn.close()
         logger.info("Database connection closed")
-        
+
     def __enter__(self):
         return self
-    
+
     def add_transaction(self, transaction: Transaction) -> int | None:
         """
         Add a new transaction to the database
@@ -78,41 +81,64 @@ class Database:
         Returns:
             int: The ID of the new transaction
         """
-        
+
         try:
             category_id = None
             subcategory_id = None
-            
-            self.cursor.execute("INSERT OR IGNORE INTO sources (name) VALUES (?)", (transaction.source,))
-            self.cursor.execute("SELECT id FROM sources WHERE name = ?", (transaction.source,))
+
+            self.cursor.execute(
+                "INSERT OR IGNORE INTO sources (name) VALUES (?)", (transaction.source,)
+            )
+            self.cursor.execute(
+                "SELECT id FROM sources WHERE name = ?", (transaction.source,)
+            )
             source_id = self.cursor.fetchone()[0]
-            
-            self.cursor.execute("""
+
+            self.cursor.execute(
+                """
                 INSERT INTO transactions
                 (date, amount, description, category_id, subcategory_id, email_id, source_id, type)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (transaction.date, transaction.amount, transaction.description, category_id, subcategory_id, transaction.email_id, source_id, transaction.type))
-            
+            """,
+                (
+                    transaction.date,
+                    transaction.amount,
+                    transaction.description,
+                    category_id,
+                    subcategory_id,
+                    transaction.email_id,
+                    source_id,
+                    transaction.type,
+                ),
+            )
+
             transaction_id = self.cursor.lastrowid
             self.conn.commit()
-            
+
             logger.info(
                 f"Transaction added [ID: {transaction_id}] | "
                 f"{transaction.amount:+.2f} | {transaction.date} | {transaction.description or 'No description'} | "
                 f"Category: {transaction.category_name or 'None'} | Subcategory: {transaction.subcategory_name or 'None'}"
             )
-            
+
             return transaction_id
         except sqlite3.IntegrityError as e:
-            if transaction.email_id and "UNIQUE constraint failed: transactions.email_id" in str(e):
-                logger.warning(f"Skipped duplicate transaction (email_id: {transaction.email_id})")
+            if (
+                transaction.email_id
+                and "UNIQUE constraint failed: transactions.email_id" in str(e)
+            ):
+                logger.warning(
+                    f"Skipped duplicate transaction (email_id: {transaction.email_id})"
+                )
                 self.conn.rollback()
                 return None  # or raise if you prefer strict mode
             else:
                 logger.error(f"Integrity error adding transaction: {e}")
-                logger.error(f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {transaction.email_id}, source: {transaction.source}, type: {type}")
+                logger.error(
+                    f"Failed data - date: {transaction.date}, amount: {transaction.amount}, email_id: {transaction.email_id}, source: {transaction.source}, type: {type}"
+                )
                 self.conn.rollback()
-                return None   
+                return None
         except sqlite3.Error as e:
             logger.error(f"Database error adding transaction: {e}")
             self.conn.rollback()

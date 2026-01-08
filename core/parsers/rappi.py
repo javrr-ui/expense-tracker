@@ -13,46 +13,57 @@ from .base_parser import BaseBankParser
 logger = logging.getLogger("expense_tracker")
 
 SPANISH_TO_ENGLISH_MONTH = {
-    'ene': 'Jan', 'feb': 'Feb', 'mar': 'Mar', 'abr': 'Apr',
-    'may': 'May', 'jun': 'Jun', 'jul': 'Jul', 'ago': 'Aug',
-    'sep': 'Sep', 'oct': 'Oct', 'nov': 'Nov', 'dic': 'Dec',
+    "ene": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "abr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "ago": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dic": "Dec",
 }
+
 
 class RappiParser(BaseBankParser):
     bank_name = SupportedBanks.RAPPI
-    
+
     CREDIT_CARD_PAYMENT_SUBJECT = "Recibimos el pago de tu Rappicard"
     CREDIT_CARD_PAYMENT_WITH_CASHBACK_SUBJECT = "Recibimos el abono de tu Rappicard"
-    
+
     def parse(self, email_message, email_id: str) -> Transaction | None:
-        subject = self._decode_subject(email_message.get('subject',''))
-        body = email_message.get('body_plain', '')
-        date = email_message.get('date', '')
-        
+        subject = self._decode_subject(email_message.get("subject", ""))
+        body = email_message.get("body_plain", "")
+        date = email_message.get("date", "")
+
         if not body:
-            body = email_message.get('body_plain', '')
-        
+            body = email_message.get("body_plain", "")
+
         if self.CREDIT_CARD_PAYMENT_SUBJECT in subject:
             tx = self._parse_credit_card_payment(body, email_id)
             return tx
-        
+
         if self.CREDIT_CARD_PAYMENT_WITH_CASHBACK_SUBJECT in subject:
             tx = self._parse_credit_card_payment(body, email_id)
             return tx
-    
-    
-    def _parse_credit_card_payment(self, body_html: str, email_id: str) -> Transaction | None:
+
+    def _parse_credit_card_payment(
+        self, body_html: str, email_id: str
+    ) -> Transaction | None:
         amount = 0.0
         description: str = "Pago de Rappicard"
         datetime_obj = None
-        
-        amount_match = re.search(r'\$\s*([\d,]+(?:\.\d{1,2})?)', body_html)
+
+        amount_match = re.search(r"\$\s*([\d,]+(?:\.\d{1,2})?)", body_html)
         if amount_match:
-            amount_str = amount_match.group(1).replace(',', '')
+            amount_str = amount_match.group(1).replace(",", "")
             amount = float(amount_str)
-        
-        date_pattern = r'(\d{1,2} [a-z]{3} \d{4})'
-        
+
+        date_pattern = r"(\d{1,2} [a-z]{3} \d{4})"
+
         date_match = re.search(date_pattern, body_html, re.IGNORECASE)
         if date_match:
             date_str = date_match.group(1).lower()
@@ -62,8 +73,7 @@ class RappiParser(BaseBankParser):
                 datetime_obj = datetime.strptime(date_str, "%d %b %Y")
             except Exception as e:
                 logger.error(f"Error parsing date '{date_str}': {e}")
-        
-        
+
         return Transaction(
             amount=amount,
             date=datetime_obj,
@@ -72,5 +82,5 @@ class RappiParser(BaseBankParser):
             description=description,
             merchant=None,
             reference=None,
-            type="expense"
+            type="expense",
         )
