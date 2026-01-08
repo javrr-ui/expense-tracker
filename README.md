@@ -7,13 +7,13 @@ Actualmente soporta:
 - **Hey Banco** (compras con tarjeta, pagos de tarjeta, transferencias SPEI entrantes/salientes)
 - **Nu** (Nubank México) – transferencias SPEI salientes (en desarrollo)
 - **RappiCard** – notificaciones de compras, transferencias y pagos
+- **Banorte** – transferencias SPEI salientes
 
 ## Soporte futuro para más bancos
 
 El proyecto está diseñado para ser fácilmente extensible. Los próximos bancos que se planea agregar son:
 
 - **PayPal** – alertas de compras y pagos enviados
-- **Banorte** – transferencias, compras con tarjeta
 
 ## Características
 
