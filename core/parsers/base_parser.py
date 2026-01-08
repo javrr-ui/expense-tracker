@@ -11,14 +11,16 @@ class BaseBankParser(ABC):
     @abstractmethod
     def parse(self, email_message, email_id: str) -> Transaction | None:
         pass
-    
+
     def _decode_subject(self, subject: str) -> str:
         if not subject:
-            return ''
-        
-        return ''.join(
-            fragment.decode(encoding or 'utf-8', errors='replace')
-            if isinstance(fragment, bytes)
-            else fragment
+            return ""
+
+        return "".join(
+            (
+                fragment.decode(encoding or "utf-8", errors="replace")
+                if isinstance(fragment, bytes)
+                else fragment
+            )
             for fragment, encoding in decode_header(subject)
         )

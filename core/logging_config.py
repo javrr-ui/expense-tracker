@@ -7,30 +7,30 @@ from logging.handlers import RotatingFileHandler
 def setup_logging(
     level: int = logging.INFO,
     log_to_file: bool = True,
-    log_file: str = 'expense_tracker.log',
+    log_file: str = "expense_tracker.log",
     max_bytes: int = 5 * 1024 * 1024,
-    backup_count: int = 3
-)-> logging.Logger:
-    logger = logging.getLogger('expense_tracker')
+    backup_count: int = 3,
+) -> logging.Logger:
+    logger = logging.getLogger("expense_tracker")
 
     if logger.handlers:
         return logger
-    
+
     logger.setLevel(level)
     logger.propagate = False
-    
+
     console_handler = logging.StreamHandler(sys.stdout)
     console_formatter = logging.Formatter(
         "%(asctime)s | %(levelname)-8s | %(name)s:%(lineno)d - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
-    
+
     console_handler.setFormatter(console_formatter)
     console_handler.setLevel(level)
     logger.addHandler(console_handler)
 
     if log_to_file:
-        os.makedirs(os.path.dirname(log_file) or '.', exist_ok=True)
+        os.makedirs(os.path.dirname(log_file) or ".", exist_ok=True)
         file_handler = RotatingFileHandler(
             log_file, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8"
         )

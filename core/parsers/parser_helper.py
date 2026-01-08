@@ -16,14 +16,17 @@ PARSERS = {
     SupportedBanks.BANORTE: BanorteParser(),
 }
 
+
 class ParserHelper:
-    
+
     @staticmethod
-    def get_parser_for_email(from_header: str) -> HeyBancoParser | NubankParser | RappiParser | None:
+    def get_parser_for_email(
+        from_header: str,
+    ) -> HeyBancoParser | NubankParser | RappiParser | None:
         """
         Determines which bank/parser to use based on the From: address.
         """
         from_lower = from_header.lower()
-        for bank , emails in bank_emails.items():
-            if any(email.lower() in from_lower for email in emails):                
+        for bank, emails in bank_emails.items():
+            if any(email.lower() in from_lower for email in emails):
                 return PARSERS.get(bank)
