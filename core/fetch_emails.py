@@ -1,6 +1,6 @@
 """Module for fetching and parsing emails from Gmail API.
 
-Ths module provides functions to list messages, retrieve individual messages,
+This module provides functions to list messages, retrieve individual messages,
 parse email content, decode payloads, and save email bodies to disk.
 """
 
