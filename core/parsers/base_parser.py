@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from email.header import decode_header
-from typing import List
 
 from models.transaction import Transaction
 
