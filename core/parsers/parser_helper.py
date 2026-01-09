@@ -32,7 +32,7 @@ class ParserHelper:
     @staticmethod
     def get_parser_for_email(
         from_header: str,
-    ) -> HeyBancoParser | NubankParser | RappiParser | None:
+    ) -> HeyBancoParser | NubankParser | RappiParser | BanorteParser | None:
         """
         Determine the appropriate parser instance based on the email's From header.
 
