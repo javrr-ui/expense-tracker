@@ -134,7 +134,7 @@ def save_email_body(
         extension = ".txt"
 
     if not body:
-        logger.debug(f"No body content to save for email {msg_id}")
+        logger.debug("No body content to save for email %s", msg_id)
         return None
 
     filename = DATA_FOLDER / f"{msg_id}{extension}"
@@ -144,5 +144,5 @@ def save_email_body(
 
         return filename
     except Exception as e:
-        logger.error(f"Failed to save email {msg_id} to {filename}: {e}")
+        logger.error("Failed to save email %s to %s: %s", msg_id, filename, e)
         return None
