@@ -181,7 +181,7 @@ class NubankParser(BaseBankParser):
             except ValueError:
                 continue
 
-        print(f"Failed to parse date: '{date_str}'")
+        logger.error("Failed to parse date: %s", date_str)
         return None
 
     def __str__(self):
