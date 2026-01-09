@@ -1,3 +1,16 @@
+"""Hey Banco email parser.
+
+This module contains the HeyBancoParser, responsible for extracting transaction
+information from notification emails sent by Hey Banco (Mexico).
+
+It handles:
+- Incoming SPEI transfers (income)
+- Outgoing SPEI transfers (expense)
+- Credit card payments
+- Credit/debit card purchases
+- Filtering out irrelevant or failed transaction notifications
+"""
+
 import logging
 import re
 from datetime import datetime
@@ -14,6 +27,12 @@ logger = logging.getLogger("expense_tracker")
 
 
 class HeyBancoParser(BaseBankParser):
+    """Parser for Hey Banco notification emails.
+
+    Recognizes and extracts transaction details from various types of Hey Banco
+    email notifications including transfers, card payments, and purchases.
+    """
+
     bank_name = SupportedBanks.HEY_BANCO
 
     SPEI_RECEPTION = "Recepción de transferencia nacional SPEI"
@@ -22,7 +41,7 @@ class HeyBancoParser(BaseBankParser):
     CREDIT_CARD_PURCHASE = "Servicio de Alertas HeyBanco"
 
     def parse(self, email_message, email_id: str) -> Transaction | None:
-
+        """Parse an incoming SPEI transfer notification."""
         subject = self._decode_subject(email_message.get("subject", ""))
         body = email_message.get("body_html", "")
 
@@ -46,6 +65,7 @@ class HeyBancoParser(BaseBankParser):
             return tx
 
     def _parse_spei_reception(self, text, email_id) -> Transaction | None:
+        """Parse an outgoing SPEI transfer notification."""
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -91,6 +111,7 @@ class HeyBancoParser(BaseBankParser):
         )
 
     def _parse_outgoing_transfer(self, text, email_id) -> Transaction | None:
+        """Parse a credit card payment confirmation email."""
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -170,6 +191,7 @@ class HeyBancoParser(BaseBankParser):
         )
 
     def _parse_credit_card_payment(self, text, email_id) -> Transaction | None:
+        """Parse a credit card payment confirmation email."""
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -253,6 +275,7 @@ class HeyBancoParser(BaseBankParser):
         )
 
     def _parse_credit_card_purchase(self, text, email_id) -> Transaction | None:
+        """Parse a debit or credit card purchase alert."""
         amount = 0.0
         description = ""
         datetime_obj = None
@@ -314,6 +337,7 @@ class HeyBancoParser(BaseBankParser):
         )
 
     def is_transaction_not_valid_or_email_not_supported(self, text: str) -> bool:
+        """Filter out failed, blocked, or irrelevant notifications."""
         rejected_match = re.search(
             r"La compra que realizaste fue rechazada por Fondos Insuficientes", text
         )
