@@ -1,4 +1,17 @@
-# auth.py
+"""Google OAuth 2.0 authentication utilities.
+
+This module handles authentication with Google Gmail API using OAuth 2.0.
+It manages loading existing credentials, refreshing expired tokens, and
+performing the full authorization flow when necessary.
+
+The module uses:
+- credentials.json: Client configuration file downloaded from Google Cloud Console
+- token.json: Automatically generated and updated file storing user access and refresh tokens
+
+Main function:
+    get_credentials() - Returns valid Credentials object ready for use with google-api-python-client
+"""
+
 import logging
 import os.path
 
