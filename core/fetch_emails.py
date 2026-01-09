@@ -143,6 +143,6 @@ def save_email_body(
             f.write(body)
 
         return filename
-    except Exception as e:
+    except OSError as e:
         logger.error("Failed to save email %s to %s: %s", msg_id, filename, e)
         return None
