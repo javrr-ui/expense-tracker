@@ -1,3 +1,15 @@
+"""Logging configuration utilities.
+
+This module provides a centralized function to configure the application's logging
+system with both console and rotating file output.
+
+The setup ensures:
+- A single logger instance for 'expense_tracker'
+- Consistent log formatting
+- Prevention of duplicate handlers on multiple calls
+- Safe rotating file handling with UTF-8 encoding
+"""
+
 import logging
 import os
 import sys
@@ -11,6 +23,24 @@ def setup_logging(
     max_bytes: int = 5 * 1024 * 1024,
     backup_count: int = 3,
 ) -> logging.Logger:
+    """
+    Configure the root logger for the expense_tracker application.
+
+    Sets up console logging (to stdout) and optional rotating file logging.
+    The function is safe to call multiple times — it detects existing handlers
+    and returns the already-configured logger without adding duplicates.
+
+    Args:
+        level: Logging level (e.g., logging.INFO, logging.DEBUG). Default: INFO
+        log_to_file: Whether to enable rotating file logging. Default: True
+        log_file: Path to the log file. Default: "expense_tracker.log"
+        max_bytes: Maximum size of a log file before rotation (in bytes).
+                   Default: 5 MB
+        backup_count: Number of backup log files to keep. Default: 3
+
+    Returns:
+        The configured logging.Logger instance named "expense_tracker"
+    """
     logger = logging.getLogger("expense_tracker")
 
     if logger.handlers:
