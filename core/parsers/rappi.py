@@ -67,7 +67,7 @@ class RappiParser(BaseBankParser):
                 for es, en in SPANISH_TO_ENGLISH_MONTH.items():
                     date_str = date_str.replace(es, en)
                 datetime_obj = datetime.strptime(date_str, "%d %b %Y")
-            except Exception as e:
+            except (ValueError, TypeError, OverflowError) as e:
                 logger.error("Error parsing date %s: %s", date_str, e)
 
         return Transaction(
