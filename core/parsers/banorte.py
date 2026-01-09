@@ -86,6 +86,8 @@ class BanorteParser(BaseBankParser):
             tx = self._parse_outgoing_transfer(body, email_id)
             return tx
 
+        return None
+
     def _parse_outgoing_transfer(self, text, email_id) -> Transaction | None:
         """
         Parse an outgoing SPEI transfer from the email body.
