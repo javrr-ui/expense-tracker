@@ -106,7 +106,8 @@ def _decode_payload(part):
         # forzar latin-1
         return payload.decode("latin-1", errors="replace")
 
-    except Exception:
+    except (TypeError, ValueError, AttributeError) as e:
+        logger.error("Error decoding email payload: %s", e)
         return "[Error al decodificar el cuerpo del email]"
 
 
