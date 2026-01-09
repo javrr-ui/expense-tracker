@@ -1,6 +1,6 @@
 """Module for fetching and parsing emails from Gmail API.
 
-Ths module provides functions to list messages, retrieve individual messages,
+This module provides functions to list messages, retrieve individual messages,
 parse email content, decode payloads, and save email bodies to disk.
 """
 
@@ -15,7 +15,7 @@ DATA_FOLDER.mkdir(exist_ok=True)
 
 
 def list_messages(service, query: str = " ", page_token: str | None = None):
-
+    """Yield all message metadata matching the query, handling pagination automatically."""
     while True:
         response = (
             service.users()
@@ -25,8 +25,7 @@ def list_messages(service, query: str = " ", page_token: str | None = None):
         )
 
         messages = response.get("messages", [])
-        for msg in messages:
-            yield msg
+        yield from messages
 
         page_token = response.get("nextPageToken")
         if not page_token:
@@ -34,6 +33,7 @@ def list_messages(service, query: str = " ", page_token: str | None = None):
 
 
 def get_message(service, msg_id):
+    """Retrieve a full email mesage in raw format and parse it into an email.message object."""
     msg = service.users().messages().get(userId="me", id=msg_id, format="raw").execute()
     msg_raw = base64.urlsafe_b64decode(msg["raw"])
     email_msg = email.message_from_bytes(msg_raw)
@@ -106,7 +106,8 @@ def _decode_payload(part):
         # forzar latin-1
         return payload.decode("latin-1", errors="replace")
 
-    except Exception:
+    except (TypeError, ValueError, AttributeError) as e:
+        logger.error("Error decoding email payload: %s", e)
         return "[Error al decodificar el cuerpo del email]"
 
 
@@ -134,7 +135,7 @@ def save_email_body(
         extension = ".txt"
 
     if not body:
-        logger.debug(f"No body content to save for email {msg_id}")
+        logger.debug("No body content to save for email %s", msg_id)
         return None
 
     filename = DATA_FOLDER / f"{msg_id}{extension}"
@@ -143,6 +144,6 @@ def save_email_body(
             f.write(body)
 
         return filename
-    except Exception as e:
-        logger.error(f"Failed to save email {msg_id} to {filename}: {e}")
+    except OSError as e:
+        logger.error("Failed to save email %s to %s: %s", msg_id, filename, e)
         return None

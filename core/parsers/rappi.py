@@ -1,3 +1,13 @@
+"""RappiCard email parser.
+
+This module contains the RappiParser, which processes payment confirmation emails
+from RappiCard (Rappi Banco) in Mexico.
+
+Currently supports:
+- Standard credit card payment confirmations
+- Payment confirmations with cashback rewards
+"""
+
 import logging
 import re
 from datetime import datetime
@@ -26,6 +36,12 @@ SPANISH_TO_ENGLISH_MONTH = {
 
 
 class RappiParser(BaseBankParser):
+    """Parser for RappiCard (Rappi Banco) payment notification emails.
+
+    Recognizes and extracts details from emails confirming payments made to
+    the Rappi credit card, including those that mention cashback rewards.
+    """
+
     bank_name = SupportedBanks.RAPPI
 
     CREDIT_CARD_PAYMENT_SUBJECT = "Recibimos el pago de tu Rappicard"
@@ -49,6 +65,20 @@ class RappiParser(BaseBankParser):
     def _parse_credit_card_payment(
         self, body_html: str, email_id: str
     ) -> Transaction | None:
+        """Extract payment amount and date from a RappiCard payment confirmation email.
+
+        The email typically contains:
+        - An amount in Mexican pesos (e.g., $1,234.56)
+        - A date in Spanish format (e.g., "15 ene 2026")
+
+        Args:
+            body_html: Plain text body of the email
+            email_id: Gmail message ID
+
+        Returns:
+            Transaction representing the credit card payment, or None if parsing fails
+        """
+
         amount = 0.0
         description: str = "Pago de Rappicard"
         datetime_obj = None
@@ -67,8 +97,8 @@ class RappiParser(BaseBankParser):
                 for es, en in SPANISH_TO_ENGLISH_MONTH.items():
                     date_str = date_str.replace(es, en)
                 datetime_obj = datetime.strptime(date_str, "%d %b %Y")
-            except Exception as e:
-                logger.error(f"Error parsing date '{date_str}': {e}")
+            except (ValueError, TypeError, OverflowError) as e:
+                logger.error("Error parsing date %s: %s", date_str, e)
 
         return Transaction(
             amount=amount,

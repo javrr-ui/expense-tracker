@@ -1,4 +1,17 @@
-# auth.py
+"""Google OAuth 2.0 authentication utilities.
+
+This module handles authentication with Google Gmail API using OAuth 2.0.
+It manages loading existing credentials, refreshing expired tokens, and
+performing the full authorization flow when necessary.
+
+The module uses:
+- credentials.json: Client configuration file downloaded from Google Cloud Console
+- token.json: Automatically generated and updated file storing user access and refresh tokens
+
+Main function:
+    get_credentials() - Returns valid Credentials object ready for use with google-api-python-client
+"""
+
 import logging
 import os.path
 
@@ -25,13 +38,16 @@ def get_credentials(scopes=None):
     Prints a clear message if connected successfully.
     Returns credentials if successful (for future use).
     """
+    if scopes is None:
+        scopes = SCOPES
+
     logger.info("Starting Google authentication")
 
     creds = None
 
     # Try to load existing token
     if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, scopes)
 
     # If no valid credentials, start OAuth flow
     if not creds or not creds.valid:
@@ -40,13 +56,13 @@ def get_credentials(scopes=None):
             creds.refresh(Request())
         else:
             logger.info("No valid credentials found. Opening browser for login")
-            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, scopes)
             creds = flow.run_local_server(port=0)
 
         # Save new/updated token
-        with open(TOKEN_FILE, "w") as token:
+        with open(TOKEN_FILE, "w", encoding="utf-8") as token:
             token.write(creds.to_json())
-        logger.info(f"Token saved to {TOKEN_FILE}")
+        logger.info("Token saved to %s", TOKEN_FILE)
 
     logger.info("Google authentication successful")
     logger.info("You are now connected to your Google account.")

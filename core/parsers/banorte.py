@@ -73,7 +73,9 @@ class BanorteParser(BaseBankParser):
             time = time_match.group(1).replace("horas", "").strip()
 
         date_match = re.search(
-            r"Fecha de Operación: </td>\s*<td nowrap=\"nowrap\">\s*(\d{1,2}/[A-Za-z]{3}/\d{4})\s*</td>",
+            r"Fecha de Operación: </td>\s*<td nowrap=\"nowrap\">\s*"
+            r"(\d{1,2}/[A-Za-z]{3}/\d{4})"
+            r"\s*</td>",
             text,
         )
         if date_match:
@@ -85,8 +87,8 @@ class BanorteParser(BaseBankParser):
 
                 full_datetime_str = f"{day} {month_en} {year} {time}"
                 datetime_obj = datetime.strptime(full_datetime_str, "%d %b %Y %H:%M:%S")
-            except Exception as e:
-                logger.error(f"Error parsing date '{date_str}': {e}")
+            except (ValueError, TypeError, OverflowError) as e:
+                logger.error("Error parsing date '%s': %s", date_str, e)
 
         return Transaction(
             source=self.bank_name,
