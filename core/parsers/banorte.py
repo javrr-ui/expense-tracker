@@ -1,3 +1,26 @@
+"""
+Banorte Bank Email Parser Module
+
+This module provides a parser for processing email notifications from Banorte bank (Mexico).
+Currently supports parsing of outgoing SPEI transfers.
+
+The parser extracts the following key information from email bodies:
+- Transaction amount
+- Operation description
+- Date and time of the transaction
+- Transaction type (currently only expense/outgoing transfers)
+
+It converts Spanish month abbreviations to English for reliable datetime parsing
+and creates Transaction model instances compatible with the expense tracking system.
+
+Supported email subjects include:
+- "Transferencia a Otros Bancos Nacionales - SPEI"
+
+Usage:
+    parser = BanorteParser()
+    transaction = parser.parse(email_message_dict, email_id)
+"""
+
 import logging
 import re
 from datetime import datetime
@@ -27,11 +50,31 @@ SPANISH_TO_ENGLISH_MONTH = {
 
 
 class BanorteParser(BaseBankParser):
+    """
+    Parser for Banorte bank emails.
+
+    This class handles parsing of specific Banorte email formats,
+    currently supporting outgoing SPEI transfers.
+    """
+
     bank_name = SupportedBanks.BANORTE
 
     SPEI_OUTGOING = "Transferencia a Otros Bancos Nacionales - SPEI"
 
     def parse(self, email_message, email_id: str) -> Transaction | None:
+        """
+        Parse the email message to extract a transaction if it matches supported types.
+
+        Checks the email subject and body to determine the transaction type
+        and delegates to the appropriate parsing method.
+
+        Args:
+            email_message: Dictionary containing email parts like subject, body_html, body_plain.
+            email_id: Unique identifier for the email.
+
+        Returns:
+            Transaction object if successfully parsed, otherwise None.
+        """
 
         subject = self._decode_subject(email_message.get("subject", ""))
         body = email_message.get("body_html", "")
@@ -44,6 +87,20 @@ class BanorteParser(BaseBankParser):
             return tx
 
     def _parse_outgoing_transfer(self, text, email_id) -> Transaction | None:
+        """
+        Parse an outgoing SPEI transfer from the email body.
+
+        Uses regular expressions to extract amount, description, time, and date
+        from the HTML-formatted email body.
+
+        Args:
+            text: The email body content (HTML or plain text)
+            email_id: Unique identifier for the email
+
+        Returns:
+            Transaction object if all required fields are parsed successfully,
+            otherwise None.
+        """
         amount = 0.0
         description = ""
         time = "00:00:00"
