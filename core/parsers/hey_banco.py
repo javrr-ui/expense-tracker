@@ -301,7 +301,9 @@ class HeyBancoParser(BaseBankParser):
             description = description_match.group(1).strip()
 
         date_match = re.search(
-            r"Fecha y hora de la transacci&oacute;n:[\s\S]*?<h4[^>]*>\s*(\d{1,2}/\d{1,2}/\d{4}\s*-\s*\d{2}:\d{2}\s*hrs)\s*</h4>",
+            r"Fecha y hora de la transacci&oacute;n:[\s\S]*?<h4[^>]*>\s*"
+            r"(\d{1,2}/\d{1,2}/\d{4}\s*-\s*\d{2}:\d{2}\s*hrs)"
+            r"\s*</h4>",
             text,
         )
         if date_match:
