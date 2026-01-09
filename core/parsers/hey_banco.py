@@ -76,7 +76,7 @@ class HeyBancoParser(BaseBankParser):
                 )
 
             except ValueError as e:
-                logger.error(f"Failed to parse date: {date_str} -> {e}")
+                logger.error("Failed to parse date: %s -> %s", date_str, e)
 
         return Transaction(
             source=self.bank_name,
@@ -100,7 +100,7 @@ class HeyBancoParser(BaseBankParser):
             try:
                 amount = float(amount_match.group(1).replace(",", ""))
             except ValueError:
-                logger.error(f"Failed to parse amount: {amount_match.group(1)}")
+                logger.error("Failed to parse amount: %s", amount_match.group(1))
                 return None
 
         description_match = re.search(
@@ -151,7 +151,9 @@ class HeyBancoParser(BaseBankParser):
                 datetime_obj = date_parser(normalized_date_str, dayfirst=True)
             except Exception as e:
                 logger.error(
-                    f"Failed to parse date (even after normalization): {date_str} -> {e}"
+                    "Failed to parse date (even after normalization): %s -> %s",
+                    date_str,
+                    e,
                 )
                 datetime_obj = None
 
@@ -181,7 +183,7 @@ class HeyBancoParser(BaseBankParser):
             try:
                 amount = float(amount_match.group(1).replace(",", ""))
             except ValueError:
-                logger.error(f"Failed to parse amount: {amount_match.group(1)}")
+                logger.error("Failed to parse amount: %s", amount_match.group(1))
                 return None
 
         description_match = re.search(
@@ -232,7 +234,9 @@ class HeyBancoParser(BaseBankParser):
                 datetime_obj = date_parser(normalized_date_str, dayfirst=True)
             except Exception as e:
                 logger.error(
-                    f"Failed to parse date (even after normalization): {date_str} -> {e}"
+                    "Failed to parse date (even after normalization): %s -> %s",
+                    date_str,
+                    e,
                 )
                 datetime_obj = None
 
@@ -264,7 +268,7 @@ class HeyBancoParser(BaseBankParser):
             try:
                 amount = float(amount_match.group(1).replace(",", ""))
             except ValueError:
-                logger.error(f"Failed to parse amount: {amount_match.group(1)}")
+                logger.error("Failed to parse amount: %s", amount_match.group(1))
                 return None
 
         description_match = re.search(
@@ -283,7 +287,7 @@ class HeyBancoParser(BaseBankParser):
             try:
                 datetime_obj = date_parser(cleaned, dayfirst=True)
             except Exception as e:
-                logger.error(f"Failed to parse date: {date_str} -> {e}")
+                logger.error("Failed to parse date: %s -> %s", date_str, e)
 
         card_type_match = re.search(
             r"con tu <b>(Credito|Debito|Crédito|Débito|Cr&eacute;dito|D&eacute;bito)</b>",
