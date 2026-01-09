@@ -1,3 +1,13 @@
+"""SQLite database interface for the expense tracker.
+
+This module defines the Database class, which manages the SQLite database
+used to store transactions, sources (banks), categories, and subcategories.
+
+It ensures the schema is created on initialization, supports context manager
+usage, and provides safe methods for inserting transactions while handling
+duplicates and errors.
+"""
+
 import logging
 import sqlite3
 
@@ -7,7 +17,23 @@ logger = logging.getLogger("expense_tracker")
 
 
 class Database:
+    """SQLite database handler for storing and managing financial transactions.
+
+    Creates and maintains the required tables (sources, categories, subcategories,
+    transactions) with proper foreign key constraints.
+
+    Supports context manager protocol for safe connection handling.
+    """
+
     def __init__(self, db_name="expenses.db"):
+        """Initialize database connection and ensure schema exists.
+
+        Args:
+            db_name: Path to the SQLite database file. Defaults to "expenses.db".
+
+        Raises:
+            sqlite3.Error: If connection or schema creation fails.
+        """
         try:
             self.conn = sqlite3.connect(db_name)
             self.cursor = self.conn.cursor()
@@ -60,11 +86,17 @@ class Database:
             raise
 
     def close(self):
+        """Close the database connection."""
         self.conn.close()
         logger.info("Database connection closed")
 
     def __enter__(self):
+        """Support context manager entry."""
         return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Support context manager exit — ensure connection is closed."""
+        self.close()
 
     def add_transaction(self, transaction: Transaction) -> int | None:
         """
