@@ -170,7 +170,7 @@ class HeyBancoParser(BaseBankParser):
 
             try:
                 datetime_obj = date_parser(normalized_date_str, dayfirst=True)
-            except Exception as e:
+            except (ValueError, TypeError, OverflowError) as e:
                 logger.error(
                     "Failed to parse date (even after normalization): %s -> %s",
                     date_str,
@@ -254,7 +254,7 @@ class HeyBancoParser(BaseBankParser):
 
             try:
                 datetime_obj = date_parser(normalized_date_str, dayfirst=True)
-            except Exception as e:
+            except (ValueError, TypeError, OverflowError) as e:
                 logger.error(
                     "Failed to parse date (even after normalization): %s -> %s",
                     date_str,
@@ -311,7 +311,7 @@ class HeyBancoParser(BaseBankParser):
             cleaned = date_str.replace("hrs", "").strip()
             try:
                 datetime_obj = date_parser(cleaned, dayfirst=True)
-            except Exception as e:
+            except (ValueError, TypeError, OverflowError) as e:
                 logger.error("Failed to parse date: %s -> %s", date_str, e)
 
         card_type_match = re.search(
