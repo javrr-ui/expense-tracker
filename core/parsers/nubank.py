@@ -1,3 +1,14 @@
+"""NuBank email parser.
+
+This module contains the NubankParser, which extracts transaction information
+from NuBank (Mexico) notification emails.
+
+Supported transaction types:
+- Credit card payments (expense)
+- Outgoing SPEI transfers (expense)
+- Incoming SPEI transfers (income)
+"""
+
 import logging
 import re
 from datetime import datetime
@@ -26,6 +37,12 @@ SPANISH_TO_ENGLISH_MONTH = {
 
 
 class NubankParser(BaseBankParser):
+    """Parser for NuBank Mexico notification emails.
+
+    Handles credit card payment confirmations and both incoming/outgoing
+    SPEI transfer notifications.
+    """
+
     bank_name = SupportedBanks.NUBANK
 
     CREDIT_CARD_PAYMENT_SUBJECT = "¡Recibimos tu pago!"
@@ -33,6 +50,15 @@ class NubankParser(BaseBankParser):
     SPEI_RECEPTION_SUBJECT = "¡Recibiste una transferencia!"
 
     def parse(self, email_message, email_id: str) -> Transaction | None:
+        """Parse a NuBank email and return a Transaction if a supported type is found.
+
+        Args:
+            email_message: Dictionary with parsed email content (subject, body_plain, date)
+            email_id: Gmail message ID for deduplication
+
+        Returns:
+            Transaction object or None if the email is not a supported notification
+        """
         subject = self._decode_subject(email_message.get("subject", ""))
         body = email_message.get("body_plain", "")
         date = email_message.get("date", "")
@@ -52,6 +78,7 @@ class NubankParser(BaseBankParser):
     def _parse_outgoing_transfer(
         self, body_html: str, email_id: str
     ) -> Transaction | None:
+        """Parse an outgoing SPEI transfer confirmation."""
         amount = 0.0
         description = "Transferencia"
         datetime_obj = None
@@ -91,6 +118,7 @@ class NubankParser(BaseBankParser):
     def _parse_credit_card_payment(
         self, body_html: str, date: str, email_id: str
     ) -> Transaction | None:
+        """Parse a credit card payment confirmation email."""
         amount = 0.0
         description: str = "Pago tarjeta de crédito Nu"
         datetime_obj = None
@@ -118,6 +146,7 @@ class NubankParser(BaseBankParser):
     def _parse_spei_reception(
         self, body_html: str, date: str, email_id: str
     ) -> Transaction | None:
+        """Parse an incoming SPEI transfer notification."""
         amount = 0.0
         description: str = "Transferencia"
         datetime_obj = None
@@ -143,6 +172,19 @@ class NubankParser(BaseBankParser):
         )
 
     def parse_nubank_datetime(self, datetime_str):
+        """Convert NuBank-specific date format (DD/MMM/YYYY HH:MM) to datetime object.
+
+        NuBank uses Spanish month abbreviations in uppercase (e.g., 15/ENE/2026).
+
+        Args:
+            datetime_str: String in format "DD/MMM/YYYY HH:MM"
+
+        Returns:
+            Parsed datetime object
+
+        Raises:
+            ValueError: If the month abbreviation is unknown
+        """
         date_part, time_part = datetime_str.strip().split(" ")
 
         # Split date: day/month/year
@@ -163,6 +205,16 @@ class NubankParser(BaseBankParser):
         return datetime.strptime(english_datetime_str, "%d/%b/%Y %H:%M")
 
     def parse_email_date(self, date_str: str) -> datetime | None:
+        """Parse the email Date header into a timezone-naive datetime object.
+
+        Handles common Gmail Date header formats.
+
+        Args:
+            date_str: Raw Date header string from the email
+
+        Returns:
+            Parsed datetime (timezone-naive) or None if parsing fails
+        """
         date_str = date_str.strip()
 
         # List of possible format
