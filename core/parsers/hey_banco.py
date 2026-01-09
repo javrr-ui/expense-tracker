@@ -306,7 +306,7 @@ class HeyBancoParser(BaseBankParser):
             email_id=email_id,
             date=datetime_obj,
             amount=amount,
-            description=description,
+            description=description + " " + transaction_type,
             merchant=None,
             reference=None,
             status="",
