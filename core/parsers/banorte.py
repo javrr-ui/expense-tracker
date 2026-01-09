@@ -73,7 +73,9 @@ class BanorteParser(BaseBankParser):
             time = time_match.group(1).replace("horas", "").strip()
 
         date_match = re.search(
-            r"Fecha de Operación: </td>\s*<td nowrap=\"nowrap\">\s*(\d{1,2}/[A-Za-z]{3}/\d{4})\s*</td>",
+            r"Fecha de Operación: </td>\s*<td nowrap=\"nowrap\">\s*"
+            r"(\d{1,2}/[A-Za-z]{3}/\d{4})"
+            r"\s*</td>",
             text,
         )
         if date_match:
