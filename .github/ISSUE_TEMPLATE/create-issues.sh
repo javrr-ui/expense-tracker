@@ -36,7 +36,7 @@ create_issue() {
     
     # Extract labels from the Type field
     local labels="code-quality"
-    if grep -q "Type.*Bug" "$issue_file"; then
+    if grep -q "^## Type" "$issue_file" && grep -A1 "^## Type" "$issue_file" | grep -q "Bug"; then
         labels="bug,code-quality"
     fi
     if grep -q "Duplication" "$issue_file"; then
