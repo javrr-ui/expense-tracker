@@ -15,7 +15,8 @@
 
 set -e
 
-ISSUE_DIR="/home/runner/work/expense-tracker/expense-tracker/.github/ISSUE_TEMPLATE"
+# Get the directory where this script is located
+ISSUE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "Creating GitHub issues from documented code smells..."
 echo "=================================================="
