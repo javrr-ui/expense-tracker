@@ -68,12 +68,11 @@ class Transaction(SQLModel, table=True):
         # Formato con separador de miles y 2 decimales (ajustado a español si quieres)
 
         return (
-            f"  Banco      : {self.source}\n"
+            f"  Banco      : {self.bank_id}\n"
             f"  Transacción: {self.description}\n"
             f"  Fecha      : {date_str}\n"
             f"  Monto      : {amount_str}\n"
             f"  Tipo       : {self.type}\n"
             f"  Comercio   : {self.merchant or 'N/A'}\n"
             f"  Referencia : {self.reference or 'N/A'}\n"
-            f"  Estado     : {self.status}"
         )
