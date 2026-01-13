@@ -14,7 +14,7 @@ import re
 from datetime import datetime
 
 from constants.banks import SupportedBanks
-from models.transaction import Transaction
+from models.transaction import Transaction, TransactionCreate
 
 from .base_parser import BaseBankParser
 
@@ -104,8 +104,8 @@ class NubankParser(BaseBankParser):
             datetime_obj = self.parse_nubank_datetime(datetime_str)
             # 2025-12-21 14:03:00
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,
@@ -132,8 +132,8 @@ class NubankParser(BaseBankParser):
         if datetime_obj is None:
             return None
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,
@@ -160,8 +160,8 @@ class NubankParser(BaseBankParser):
         if datetime_obj is None:
             return None
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,

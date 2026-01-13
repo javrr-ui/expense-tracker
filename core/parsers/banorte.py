@@ -27,7 +27,7 @@ from datetime import datetime
 
 
 from constants.banks import SupportedBanks
-from models.transaction import Transaction
+from models.transaction import Transaction, TransactionCreate
 
 from core.parsers.base_parser import BaseBankParser
 
@@ -149,8 +149,8 @@ class BanorteParser(BaseBankParser):
             except (ValueError, TypeError, OverflowError) as e:
                 logger.error("Error parsing date '%s': %s", date_str, e)
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,

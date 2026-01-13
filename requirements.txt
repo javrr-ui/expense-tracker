@@ -7,3 +7,4 @@ google-auth-oauthlib
 typing
 unidecode
 logging
+sqlmodel
