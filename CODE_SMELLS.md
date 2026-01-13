@@ -376,8 +376,8 @@ Define a consistent error handling strategy:
 
 ## 14. Inconsistent Body Selection Logic
 
-**Severity:** Low  
-**Category:** Code Inconsistency
+**Severity:** Medium  
+**Category:** Code Inconsistency / Bug
 
 ### Description
 Different parsers have inconsistent logic for choosing between `body_html` and `body_plain`.
@@ -402,8 +402,8 @@ Implement a consistent body selection strategy, possibly in the base parser clas
 
 **Total Issues:** 14  
 **High Severity:** 1  
-**Medium Severity:** 7  
-**Low Severity:** 6
+**Medium Severity:** 8  
+**Low Severity:** 5
 
 ### Priority Recommendations
 1. **Fix Bug #8** (Variable shadowing) - Quick win, clear bug

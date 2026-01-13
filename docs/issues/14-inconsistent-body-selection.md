@@ -1,6 +1,6 @@
 # Bug: Inconsistent Body Selection Logic
 
-**Labels:** `bug`, `code-quality`, `low-priority`  
+**Labels:** `bug`, `code-quality`, `medium-priority`  
 **Type:** Code Inconsistency / Bug
 
 ## Description
