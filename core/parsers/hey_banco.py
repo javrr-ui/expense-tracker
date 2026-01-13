@@ -19,7 +19,7 @@ from dateutil.parser import parse as date_parser
 from unidecode import unidecode
 
 from constants.banks import SupportedBanks
-from models.transaction import Transaction
+from models.transaction import Transaction, TransactionCreate
 
 from core.parsers.base_parser import BaseBankParser
 
@@ -98,8 +98,8 @@ class HeyBancoParser(BaseBankParser):
             except ValueError as e:
                 logger.error("Failed to parse date: %s -> %s", date_str, e)
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,
@@ -178,8 +178,8 @@ class HeyBancoParser(BaseBankParser):
                 )
                 datetime_obj = None
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,
@@ -262,8 +262,8 @@ class HeyBancoParser(BaseBankParser):
                 )
                 datetime_obj = None
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,
@@ -326,8 +326,8 @@ class HeyBancoParser(BaseBankParser):
             if card == "credito":
                 transaction_type = "credit_card_purchase"
 
-        return Transaction(
-            source=self.bank_name,
+        return TransactionCreate(
+            bank_name=self.bank_name,
             email_id=email_id,
             date=datetime_obj,
             amount=amount,

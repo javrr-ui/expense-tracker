@@ -8,14 +8,26 @@ fields for future use, and a custom __str__ method for human-readable formatting
 """
 
 from datetime import datetime
-from typing import Literal
-
+from typing import Literal, Optional
+from sqlmodel import Field, SQLModel
 from pydantic import BaseModel
 
-from constants.banks import SupportedBanks
+
+class TransactionCreate(BaseModel):
+    """Data model for creating a new transaction."""
+
+    email_id: str
+    date: Optional[datetime] = None
+    amount: float
+    description: str = ""
+    type: Literal["expense", "income"]
+    bank_name: str  # ← only this string from enum .value
+    merchant: Optional[str] = None
+    reference: Optional[str] = None
+    status: str = "approved"
 
 
-class Transaction(BaseModel):
+class Transaction(SQLModel, table=True):
     """
     Represents a single financial transaction extracted from a bank email notification.
 
@@ -36,17 +48,19 @@ class Transaction(BaseModel):
         status: Transaction status - defaults to "approved"
     """
 
+    __tablename__ = "transactions"
+
+    transaction_id: int | None = Field(default=None, primary_key=True)
     date: datetime | None
     email_id: str
-    source: SupportedBanks
+    bank_id: int = Field(foreign_key="bank.id")
     amount: float
     description: str
-    type: Literal["expense", "income"]
-    category_name: str = ""
-    subcategory_name: str = ""
+    type: str
+    category_id: Optional[int] = Field(default=None, foreign_key="category.id")
+    subcategory_id: Optional[int] = Field(default=None, foreign_key="subcategory.id")
     merchant: str | None = None
     reference: str | None = None
-    status: str = "approved"
 
     def __str__(self) -> str:
         date_str = self.date.strftime("%Y-%m-%d %H:%M:%S") if self.date else "None"

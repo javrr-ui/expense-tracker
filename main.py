@@ -16,10 +16,12 @@ import logging
 from constants.banks import SupportedBanks, bank_emails
 from core.fetch_emails import get_message, list_messages, parse_email, save_email_body
 from core.gmail_service import get_gmail_service
+from core.services.transaction_service import TransactionService
 from core.google_auth import get_credentials
 from core.logging_config import setup_logging
 from core.parsers.parser_helper import ParserHelper
 from database.database import Database
+
 
 logger = setup_logging(level=logging.DEBUG)
 
@@ -64,6 +66,7 @@ def main():
     logger.info("Starting expense tracking process")
 
     db = Database()
+    transaction_service = TransactionService(db)
     creds = get_credentials()
     service = get_gmail_service(creds)
 
@@ -88,7 +91,7 @@ def main():
 
             transaction = parser.parse(email_message, msg_id)
             if transaction:
-                db.add_transaction(transaction)
+                transaction_service.save_transaction(transaction)
 
         logger.info("Process completed")
     except Exception as e:
