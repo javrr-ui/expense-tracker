@@ -13,6 +13,14 @@ import logging
 from contextlib import contextmanager
 from sqlmodel import create_engine, SQLModel, Session
 
+from models.bank import Bank
+from models.category import Category
+from models.subcategory import Subcategory
+from models.transaction import Transaction
+
+# These imports ensure SQLModel discovers all table definitions
+__all__ = ["Database", "Bank", "Category", "Subcategory", "Transaction"]
+
 
 logger = logging.getLogger("expense_tracker")
 
@@ -42,11 +50,6 @@ class Database:
                 url=db_url,
                 echo=False,
             )
-
-            from models.bank import Bank
-            from models.category import Category
-            from models.subcategory import Subcategory
-            from models.transaction import Transaction
 
             SQLModel.metadata.create_all(self.engine)
             logger.info("Database initialized: %s", db_url)
