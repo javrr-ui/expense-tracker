@@ -57,7 +57,7 @@ class TransactionService:
                     tx.date,
                     tx.description,
                     tx.category_id,
-                    tx.category_id,
+                    tx.subcategory_id,
                 )
                 return tx.transaction_id
             except SQLAlchemyError as e:
