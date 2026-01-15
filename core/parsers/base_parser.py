@@ -8,7 +8,7 @@ emails and a helper method for decoding email subjects.
 from abc import ABC, abstractmethod
 from email.header import decode_header
 
-from models.transaction import Transaction
+from models.transaction import TransactionCreate
 
 
 class BaseBankParser(ABC):
@@ -21,11 +21,11 @@ class BaseBankParser(ABC):
     Attributes:
         bank_name (str): The name of the bank (default: "generic").
     """
-    
+
     bank_name = "generic"
 
     @abstractmethod
-    def parse(self, email_message, email_id: str) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> TransactionCreate | None:
         """Parse an email message to extract a transaction.
 
         This method must be implemented by subclasses to handle bank-specific
@@ -54,7 +54,7 @@ class BaseBankParser(ABC):
         Returns:
             str: The decoded subject string.
         """
-        
+
         if not subject:
             return ""
 

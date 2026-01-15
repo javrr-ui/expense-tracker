@@ -47,7 +47,7 @@ class RappiParser(BaseBankParser):
     CREDIT_CARD_PAYMENT_SUBJECT = "Recibimos el pago de tu Rappicard"
     CREDIT_CARD_PAYMENT_WITH_CASHBACK_SUBJECT = "Recibimos el abono de tu Rappicard"
 
-    def parse(self, email_message, email_id: str) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> TransactionCreate | None:
         subject = self._decode_subject(email_message.get("subject", ""))
         body = email_message.get("body_plain", "")
 
@@ -64,7 +64,7 @@ class RappiParser(BaseBankParser):
 
     def _parse_credit_card_payment(
         self, body_html: str, email_id: str
-    ) -> Transaction | None:
+    ) -> TransactionCreate | None:
         """Extract payment amount and date from a RappiCard payment confirmation email.
 
         The email typically contains:

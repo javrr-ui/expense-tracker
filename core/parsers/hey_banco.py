@@ -40,7 +40,7 @@ class HeyBancoParser(BaseBankParser):
     CREDIT_CARD_PAYMENT = "Banca Electrónica Hey, Solicitud de pago de Tarjeta Hey"
     CREDIT_CARD_PURCHASE = "Servicio de Alertas HeyBanco"
 
-    def parse(self, email_message, email_id: str) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> TransactionCreate | None:
         """Parse an incoming SPEI transfer notification."""
         subject = self._decode_subject(email_message.get("subject", ""))
         body = email_message.get("body_html", "")
@@ -64,7 +64,7 @@ class HeyBancoParser(BaseBankParser):
             tx = self._parse_credit_card_purchase(body, email_id)
             return tx
 
-    def _parse_spei_reception(self, text, email_id) -> Transaction | None:
+    def _parse_spei_reception(self, text, email_id) -> TransactionCreate | None:
         """Parse an outgoing SPEI transfer notification."""
         amount = 0.0
         description = ""
@@ -110,7 +110,7 @@ class HeyBancoParser(BaseBankParser):
             type="income",
         )
 
-    def _parse_outgoing_transfer(self, text, email_id) -> Transaction | None:
+    def _parse_outgoing_transfer(self, text, email_id) -> TransactionCreate | None:
         """Parse a credit card payment confirmation email."""
         amount = 0.0
         description = ""
@@ -190,7 +190,7 @@ class HeyBancoParser(BaseBankParser):
             type="expense",
         )
 
-    def _parse_credit_card_payment(self, text, email_id) -> Transaction | None:
+    def _parse_credit_card_payment(self, text, email_id) -> TransactionCreate | None:
         """Parse a credit card payment confirmation email."""
         amount = 0.0
         description = ""
@@ -274,7 +274,7 @@ class HeyBancoParser(BaseBankParser):
             type="expense",
         )
 
-    def _parse_credit_card_purchase(self, text, email_id) -> Transaction | None:
+    def _parse_credit_card_purchase(self, text, email_id) -> TransactionCreate | None:
         """Parse a debit or credit card purchase alert."""
         amount = 0.0
         description = ""

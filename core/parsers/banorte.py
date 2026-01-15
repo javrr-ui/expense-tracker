@@ -61,7 +61,7 @@ class BanorteParser(BaseBankParser):
 
     SPEI_OUTGOING = "Transferencia a Otros Bancos Nacionales - SPEI"
 
-    def parse(self, email_message, email_id: str) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> TransactionCreate | None:
         """
         Parse the email message to extract a transaction if it matches supported types.
 
@@ -88,7 +88,7 @@ class BanorteParser(BaseBankParser):
 
         return None
 
-    def _parse_outgoing_transfer(self, text, email_id) -> Transaction | None:
+    def _parse_outgoing_transfer(self, text, email_id) -> TransactionCreate | None:
         """
         Parse an outgoing SPEI transfer from the email body.
 
@@ -100,7 +100,7 @@ class BanorteParser(BaseBankParser):
             email_id: Unique identifier for the email
 
         Returns:
-            Transaction object if all required fields are parsed successfully,
+            TransactionCreate object if all required fields are parsed successfully,
             otherwise None.
         """
         amount = 0.0

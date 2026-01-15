@@ -49,7 +49,7 @@ class NubankParser(BaseBankParser):
     SPEI_OUTGOING_SUBJECT = "Tu transferencia fue exitosa"
     SPEI_RECEPTION_SUBJECT = "¡Recibiste una transferencia!"
 
-    def parse(self, email_message, email_id: str) -> Transaction | None:
+    def parse(self, email_message, email_id: str) -> TransactionCreate | None:
         """Parse a NuBank email and return a Transaction if a supported type is found.
 
         Args:
@@ -77,7 +77,7 @@ class NubankParser(BaseBankParser):
 
     def _parse_outgoing_transfer(
         self, body_html: str, email_id: str
-    ) -> Transaction | None:
+    ) -> TransactionCreate | None:
         """Parse an outgoing SPEI transfer confirmation."""
         amount = 0.0
         description = "Transferencia"
@@ -117,7 +117,7 @@ class NubankParser(BaseBankParser):
 
     def _parse_credit_card_payment(
         self, body_html: str, date: str, email_id: str
-    ) -> Transaction | None:
+    ) -> TransactionCreate | None:
         """Parse a credit card payment confirmation email."""
         amount = 0.0
         description: str = "Pago tarjeta de crédito Nu"
@@ -145,7 +145,7 @@ class NubankParser(BaseBankParser):
 
     def _parse_spei_reception(
         self, body_html: str, date: str, email_id: str
-    ) -> Transaction | None:
+    ) -> TransactionCreate | None:
         """Parse an incoming SPEI transfer notification."""
         amount = 0.0
         description: str = "Transferencia"
