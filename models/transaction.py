@@ -48,7 +48,7 @@ class Transaction(SQLModel, table=True):
         status: Transaction status - defaults to "approved"
     """
 
-    __tablename__ = "transactions" # type: ignore
+    __tablename__ = "transactions"  # type: ignore
 
     transaction_id: int | None = Field(default=None, primary_key=True)
     date: datetime | None
