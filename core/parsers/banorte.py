@@ -114,7 +114,7 @@ class BanorteParser(BaseBankParser):
         )
 
         if amount_match:
-            amount = amount = float(amount_match.group(1).replace(",", ""))
+            amount = float(amount_match.group(1).replace(",", ""))
 
         description_match = re.search(
             r"Operación: </td>\s*<td align=\"left\" nowrap=\"nowrap\">\s*(.*?)\s*</td>",

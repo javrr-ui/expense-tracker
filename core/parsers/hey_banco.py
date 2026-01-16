@@ -75,7 +75,7 @@ class HeyBancoParser(BaseBankParser):
         )
 
         if amount_match:
-            amount = amount = float(amount_match.group(1).replace(",", ""))
+            amount = float(amount_match.group(1).replace(",", ""))
 
         description_match = re.search(
             r"Concepto\s+pago\s*:\s*<br\s*/?>\s*<span\b[^>]*>([^<]+)</span>", text
