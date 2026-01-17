@@ -52,7 +52,7 @@ class RappiParser(BaseBankParser):
         body = email_message.get("body_plain", "")
 
         if not body:
-            body = email_message.get("body_plain", "")
+            body = email_message.get("body_html", "")
 
         if self.CREDIT_CARD_PAYMENT_SUBJECT in subject:
             tx = self._parse_credit_card_payment(body, email_id)
