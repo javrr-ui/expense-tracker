@@ -27,7 +27,7 @@ from datetime import datetime
 
 
 from constants.banks import SupportedBanks
-from models.transaction import Transaction, TransactionCreate
+from models.transaction import TransactionCreate
 
 from core.parsers.base_parser import BaseBankParser
 
