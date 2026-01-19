@@ -49,3 +49,5 @@ class ParserHelper:
         for bank, emails in bank_emails.items():
             if any(email.lower() in from_lower for email in emails):
                 return PARSERS.get(bank)
+
+        return None

@@ -64,6 +64,8 @@ class HeyBancoParser(BaseBankParser):
             tx = self._parse_credit_card_purchase(body, email_id)
             return tx
 
+        return None
+
     def _parse_spei_reception(self, text, email_id) -> TransactionCreate | None:
         """Parse an outgoing SPEI transfer notification."""
         amount = 0.0

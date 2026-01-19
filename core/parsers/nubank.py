@@ -75,6 +75,8 @@ class NubankParser(BaseBankParser):
             tx = self._parse_spei_reception(body, date, email_id)
             return tx
 
+        return None
+
     def _parse_outgoing_transfer(
         self, body_html: str, email_id: str
     ) -> TransactionCreate | None:
