@@ -61,7 +61,7 @@ class RappiParser(BaseBankParser):
         if self.CREDIT_CARD_PAYMENT_WITH_CASHBACK_SUBJECT in subject:
             tx = self._parse_credit_card_payment(body, email_id)
             return tx
-        
+
         return None
 
     def _parse_credit_card_payment(
