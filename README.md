@@ -14,6 +14,10 @@ Actualmente soporta:
 El proyecto está diseñado para ser fácilmente extensible. Los próximos bancos que se planea agregar son:
 
 - **PayPal** – alertas de compras y pagos enviados
+- **Mercado pago** - alertas de compras y pagos de tarjetas
+- **DiDi Prestamos** - Depositos y pagos de prestamos
+- **Banamex** - Compras, transferencias y pago de tarjeta
+- **American Express** - Compras y pago de tarjeta
 
 ## Características
 
