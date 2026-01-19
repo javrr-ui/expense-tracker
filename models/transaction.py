@@ -52,7 +52,7 @@ class Transaction(SQLModel, table=True):
 
     transaction_id: int | None = Field(default=None, primary_key=True)
     date: datetime | None
-    email_id: str
+    email_id: str = Field(unique=True)
     bank_id: int = Field(foreign_key="bank.id")
     amount: float
     description: str
