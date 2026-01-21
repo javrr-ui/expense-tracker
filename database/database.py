@@ -17,9 +17,19 @@ from models.bank import Bank
 from models.category import Category
 from models.subcategory import Subcategory
 from models.transaction import Transaction
+from models.account import Account
+from models.account_type import AccountType
 
 # These imports ensure SQLModel discovers all table definitions
-__all__ = ["Database", "Bank", "Category", "Subcategory", "Transaction"]
+__all__ = [
+    "Database",
+    "Bank",
+    "Category",
+    "Subcategory",
+    "Transaction",
+    "Account",
+    "AccountType",
+]
 
 
 logger = logging.getLogger("expense_tracker")
