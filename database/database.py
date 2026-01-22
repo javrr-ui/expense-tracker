@@ -83,5 +83,6 @@ class Database:
 
     def close(self):
         """Close the database connection."""
-        self.engine.dispose()
+        if self.engine is not None:
+            self.engine.dispose()
         logger.info("Database engine disposed")
