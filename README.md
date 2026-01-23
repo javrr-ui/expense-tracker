@@ -8,13 +8,13 @@ Actualmente soporta:
 - **Nu** (Nubank México) – transferencias SPEI salientes (en desarrollo)
 - **RappiCard** – notificaciones de compras, transferencias y pagos
 - **Banorte** – transferencias SPEI salientes
+- **Mercado pago** - transferencias SPEI salientes
 
 ## Soporte futuro para más bancos
 
 El proyecto está diseñado para ser fácilmente extensible. Los próximos bancos que se planea agregar son:
 
 - **PayPal** – alertas de compras y pagos enviados
-- **Mercado pago** - alertas de compras y pagos de tarjetas
 - **DiDi Prestamos** - Depositos y pagos de prestamos
 - **Banamex** - Compras, transferencias y pago de tarjeta
 - **American Express** - Compras y pago de tarjeta
