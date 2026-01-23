@@ -43,7 +43,7 @@ class MercadoPagoParser(BaseBankParser):
         datetime_obj = None
 
         amount_match = re.search(
-            r"transferencia de\s*<span[^>]*>\$\s*([\d,]+(?:\.\d{2})?)</span>",
+            r"transferencia de\s*(?:<span[^>]*>)?\$\s*([\d,]+(?:\.\d{1,2})?)(?:</span>)?\.?",
             body_html,
             re.IGNORECASE | re.DOTALL,
         )
