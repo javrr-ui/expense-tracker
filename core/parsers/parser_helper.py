@@ -14,6 +14,7 @@ from core.parsers.hey_banco import HeyBancoParser
 from core.parsers.nubank import NubankParser
 from core.parsers.rappi import RappiParser
 from core.parsers.banorte import BanorteParser
+from core.parsers.mercado_pago import MercadoPagoParser
 
 logger = logging.getLogger("expense_tracker")
 
@@ -23,6 +24,7 @@ PARSERS = {
     SupportedBanks.RAPPI: RappiParser(),
     # SupportedBanks.PAYPAL: PayPalParser(),
     SupportedBanks.BANORTE: BanorteParser(),
+    SupportedBanks.MERCADO_PAGO: MercadoPagoParser()
 }
 
 
@@ -32,7 +34,7 @@ class ParserHelper:
     @staticmethod
     def get_parser_for_email(
         from_header: str,
-    ) -> HeyBancoParser | NubankParser | RappiParser | BanorteParser | None:
+    ) -> HeyBancoParser | NubankParser | RappiParser | BanorteParser | MercadoPagoParser | None:
         """
         Determine the appropriate parser instance based on the email's From header.
 
