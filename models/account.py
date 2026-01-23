@@ -15,9 +15,7 @@ class Account(SQLModel, table=True):
     account_type_id: int = Field(foreign_key="account_type.id")
     current_balance: float = Field(default=0.0)
     currency: str = Field(default="MXN", max_length=3)
-    apr: float = Field(
-        default=0.0, description="Annual Percentage Rate"
-    )
+    apr: float = Field(default=0.0, description="Annual Percentage Rate")
     minimum_payment: float | None = Field(default=None)
     due_date_day: int | None = Field(
         default=None, description="Day of the month when payment is due"
