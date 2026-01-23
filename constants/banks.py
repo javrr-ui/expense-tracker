@@ -21,6 +21,7 @@ class SupportedBanks(StrEnum):
     RAPPI = "rappi"
     PAYPAL = "paypal"
     BANORTE = "banorte"
+    MERCADO_PAGO = "mercado_pago"
 
 
 bank_emails = {
@@ -37,4 +38,5 @@ bank_emails = {
     ],
     SupportedBanks.PAYPAL: ["service@paypal.com.mx"],
     SupportedBanks.BANORTE: ["notificaciones@banorte.com"],
+    SupportedBanks.MERCADO_PAGO: ["info@mercadopago.com "]
 }
