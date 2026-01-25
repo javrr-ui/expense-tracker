@@ -22,9 +22,8 @@ PARSERS = {
     SupportedBanks.HEY_BANCO: HeyBancoParser(),
     SupportedBanks.NUBANK: NubankParser(),
     SupportedBanks.RAPPI: RappiParser(),
-    # SupportedBanks.PAYPAL: PayPalParser(),
     SupportedBanks.BANORTE: BanorteParser(),
-    SupportedBanks.MERCADO_PAGO: MercadoPagoParser()
+    SupportedBanks.MERCADO_PAGO: MercadoPagoParser(),
 }
 
 
