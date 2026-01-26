@@ -38,6 +38,7 @@ class MercadoPagoParser(BaseBankParser):
     def _parse_outgoing_transfer(
         self, body_html: str, date: str, email_id: str
     ) -> TransactionCreate | None:
+        """Parse an outgoing transfer notification from Mercado Pago email body."""
         amount = 0.0
         description = "Transferencia"
         datetime_obj = None
