@@ -30,7 +30,7 @@ class TransactionService:
                 if bank is None:
                     bank = Bank(name=transaction.bank_name)
                     session.add(bank)
-                    session.commit()  # commit so we get the ID
+                    session.commit()
                     session.refresh(bank)
 
                 tx = Transaction(
