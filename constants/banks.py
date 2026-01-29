@@ -22,6 +22,7 @@ class SupportedBanks(StrEnum):
     PAYPAL = "paypal"
     BANORTE = "banorte"
     MERCADO_PAGO = "mercado_pago"
+    AMEX = "amex"
 
 
 bank_emails = {
