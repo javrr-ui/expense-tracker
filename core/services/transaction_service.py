@@ -1,6 +1,6 @@
 """Transaction service for managing transactions."""
 
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import logging
 from sqlmodel import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -71,3 +71,56 @@ class TransactionService:
                 session.rollback()
                 logger.error("Value error (likely invalid data type): %s", e)
                 return None
+
+    def list_transactions(self, limit: int = 100, offset: int = 0) -> List[Dict[str, Any]]:
+        """List transactions with their bank name."""
+        with self.db.session() as session:
+            try:
+                stmt = (
+                    select(Transaction, Bank)
+                    .join(Bank, Bank.id == Transaction.bank_id)
+                    .order_by(Transaction.date.desc(), Transaction.transaction_id.desc())
+                    .offset(offset)
+                    .limit(limit)
+                )
+                results = session.exec(stmt).all()
+                return [self._map_transaction(tx, bank) for tx, bank in results]
+            except SQLAlchemyError as e:
+                logger.error("SQLAlchemy database error during list: %s", e, exc_info=True)
+                return []
+
+    def get_transaction(self, transaction_id: int) -> Optional[Dict[str, Any]]:
+        """Get a single transaction by id."""
+        with self.db.session() as session:
+            try:
+                stmt = (
+                    select(Transaction, Bank)
+                    .join(Bank, Bank.id == Transaction.bank_id)
+                    .where(Transaction.transaction_id == transaction_id)
+                )
+                result = session.exec(stmt).first()
+                if result is None:
+                    return None
+                tx, bank = result
+                return self._map_transaction(tx, bank)
+            except SQLAlchemyError as e:
+                logger.error("SQLAlchemy database error during get: %s", e, exc_info=True)
+                return None
+
+    @staticmethod
+    def _map_transaction(tx: Transaction, bank: Bank) -> Dict[str, Any]:
+        """Map Transaction and Bank to a serializable dictionary."""
+        return {
+            "transaction_id": tx.transaction_id,
+            "email_id": tx.email_id,
+            "date": tx.date,
+            "amount": tx.amount,
+            "description": tx.description,
+            "type": tx.type,
+            "bank_id": tx.bank_id,
+            "bank_name": bank.name,
+            "category_id": tx.category_id,
+            "subcategory_id": tx.subcategory_id,
+            "merchant": tx.merchant,
+            "reference": tx.reference,
+        }
