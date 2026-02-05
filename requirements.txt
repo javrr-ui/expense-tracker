@@ -8,3 +8,4 @@ typing
 unidecode
 logging
 sqlmodel
+fastapi[standard]
