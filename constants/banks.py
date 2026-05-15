@@ -40,4 +40,5 @@ bank_emails = {
     SupportedBanks.PAYPAL: ["service@paypal.com.mx"],
     SupportedBanks.BANORTE: ["notificaciones@banorte.com"],
     SupportedBanks.MERCADO_PAGO: ["info@mercadopago.com"],
+    SupportedBanks.AMEX: ["AmericanExpress@welcome.americanexpress.com"]
 }
