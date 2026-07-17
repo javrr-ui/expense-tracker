@@ -37,7 +37,15 @@ bank_emails = {
         "rappi.nreply@rappi.com",
         "no-reply@mailing.rappicard.com.mx",
     ],
-    SupportedBanks.PAYPAL: ["service@paypal.com.mx"],
+    SupportedBanks.PAYPAL: [
+        "service@paypal.com.mx",
+        "service@paypal.com",
+        "service@intl.paypal.com",
+        "paypal@paypal.com",
+        "paypal@paypal.com.mx",
+        "member@paypal.com.mx",
+        "member@paypal.com",
+    ],
     SupportedBanks.BANORTE: ["notificaciones@banorte.com"],
     SupportedBanks.MERCADO_PAGO: ["info@mercadopago.com"],
     SupportedBanks.AMEX: ["AmericanExpress@welcome.americanexpress.com"]
