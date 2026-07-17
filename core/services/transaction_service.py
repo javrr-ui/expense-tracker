@@ -2,7 +2,7 @@
 
 from typing import Optional, List, Dict, Any
 import logging
-from sqlmodel import select
+from sqlmodel import col, desc, func, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from database.database import Database
@@ -21,9 +21,17 @@ class TransactionService:
         self.db = db
 
     def save_transaction(self, transaction: TransactionCreate) -> Optional[int]:
-        """Save a transaction to the database."""
+        """Save a transaction to the database. Skips duplicates by email_id."""
         with self.db.session() as session:
             try:
+                # Skip if this email was already processed
+                existing = session.exec(
+                    select(Transaction).where(Transaction.email_id == transaction.email_id)
+                ).first()
+                if existing:
+                    logger.info("Duplicate email_id skipped: %s", transaction.email_id)
+                    return None
+
                 stmt = select(Bank).where(Bank.name == transaction.bank_name)
                 bank = session.exec(stmt).first()
 
@@ -32,6 +40,10 @@ class TransactionService:
                     session.add(bank)
                     session.commit()
                     session.refresh(bank)
+
+                if bank.id is None:
+                    logger.error("Bank has no id after save: %s", transaction.bank_name)
+                    return None
 
                 tx = Transaction(
                     bank_id=bank.id,
@@ -78,8 +90,11 @@ class TransactionService:
             try:
                 stmt = (
                     select(Transaction, Bank)
-                    .join(Bank, Bank.id == Transaction.bank_id)
-                    .order_by(Transaction.date.desc(), Transaction.transaction_id.desc())
+                    .join(Bank, col(Bank.id) == col(Transaction.bank_id))
+                    .order_by(
+                        desc(col(Transaction.date)),
+                        desc(col(Transaction.transaction_id)),
+                    )
                     .offset(offset)
                     .limit(limit)
                 )
@@ -89,13 +104,23 @@ class TransactionService:
                 logger.error("SQLAlchemy database error during list: %s", e, exc_info=True)
                 return []
 
+    def count_transactions(self) -> int:
+        """Return the total number of transactions."""
+        with self.db.session() as session:
+            try:
+                stmt = select(func.count()).select_from(Transaction)  # pylint: disable=not-callable
+                return session.exec(stmt).one()
+            except SQLAlchemyError as e:
+                logger.error("SQLAlchemy database error during count: %s", e, exc_info=True)
+                return 0
+
     def get_transaction(self, transaction_id: int) -> Optional[Dict[str, Any]]:
         """Get a single transaction by id."""
         with self.db.session() as session:
             try:
                 stmt = (
                     select(Transaction, Bank)
-                    .join(Bank, Bank.id == Transaction.bank_id)
+                    .join(Bank, col(Bank.id) == col(Transaction.bank_id))
                     .where(Transaction.transaction_id == transaction_id)
                 )
                 result = session.exec(stmt).first()
