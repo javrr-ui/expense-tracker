@@ -30,3 +30,23 @@ El proyecto está diseñado para ser fácilmente extensible. Los próximos banco
   - Tablas preparadas para categorías y subcategorías (próxima funcionalidad)
 - Logging detallado
 - Arquitectura limpia y extensible
+
+## Interfaz Gráfica (Frontend)
+
+Se incluye una interfaz web construida con **React + TypeScript + Tailwind CSS**.
+
+### Ejecutar el proyecto
+
+```bash
+# Terminal 1 - Backend
+fastapi dev api.py
+
+# Terminal 2 - Frontend
+cd frontend
+npm run dev
+```
+
+- Backend: `http://localhost:8000`
+- Frontend: `http://localhost:5173`
+
+La interfaz permite ver, filtrar y buscar transacciones, además de disparar manualmente la sincronización con Gmail.
