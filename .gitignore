@@ -14,8 +14,9 @@ __pycache__/
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
 
-# Ignore log files
+# Ignore log files (including rotated backups like .log.1, .log.2)
 *.log
+*.log.*
 
 # Ignore database files
 *.db
