@@ -50,9 +50,9 @@ def build_query_for_bank(bank: SupportedBanks) -> str:
     return f"({or_part})"
 
 
-def main():
+def run_sync():
     """
-    Main execution function of the expense tracker.
+    Run the full expense tracking workflow.
 
     Performs the full workflow:
     1. Sets up logging
@@ -99,6 +99,11 @@ def main():
         raise
     finally:
         db.close()
+
+
+def main():
+    """Script entry point."""
+    run_sync()
 
 
 if __name__ == "__main__":
