@@ -64,7 +64,7 @@ class PayPalParser(BaseBankParser):
 
         txn_type = self._determine_type(subject_lower, body)
         date = self._extract_date(body)
-        amount, _currency = self._extract_amount(body)
+        amount, currency, amount_mxn = self._extract_amount(body)
 
         if amount <= 0:
             return None
@@ -83,6 +83,8 @@ class PayPalParser(BaseBankParser):
             reference=reference,
             status="",
             type=txn_type,
+            currency=currency,
+            amount_mxn=amount_mxn,
         )
 
     @staticmethod
@@ -167,42 +169,62 @@ class PayPalParser(BaseBankParser):
         return None
 
     @staticmethod
-    def _extract_amount(body: str) -> tuple[float, str]:
-        """Extract the transaction amount and currency."""
-        # New template: "Ha pagado $6.00 USD a Merchant" or "Usted envió $5.60 USD a X"
-        for prefix in [r'Ha\s+pagado', r'Usted\s+envi[oó]']:
+    def _extract_amount(body: str) -> tuple[float, str, float | None]:
+        """Extract the original amount, its currency, and MXN equivalent if present."""
+        normalized = (
+            body.replace("\xa0", " ")
+            .replace("&nbsp;", " ")
+            .replace("&#160;", " ")
+        )
+        amount = 0.0
+        currency = "MXN"
+
+        for prefix in [r"Ha\s+pagado", r"Usted\s+envi[oó]"]:
             match = re.search(
-                rf'{prefix}\s+\$([\d,]+\.\d{2})\s*&nbsp;?\s*(MXN|USD|EUR)',
-                body,
+                rf"{prefix}\s+\$([\d,]+\.\d{{2}})\s*(MXN|USD|EUR)",
+                normalized,
                 re.IGNORECASE,
             )
             if match:
                 try:
                     amount = float(match.group(1).replace(",", ""))
-                    return amount, match.group(2).upper()
+                    currency = match.group(2).upper()
+                    break
                 except ValueError:
                     pass
 
-        patterns = [
-            r'importe\s+de\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)',
-            r'por\s+importe\s+de\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)',
-            r'transfiriéramos\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)',
-            r'transferido\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)',
-            r'Importe\s+total\s+transferido[^<]*?\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)',
-            r'\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)',
-        ]
+        if amount <= 0:
+            patterns = [
+                r"importe\s+de\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)",
+                r"por\s+importe\s+de\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)",
+                r"transfiriéramos\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)",
+                r"transferido\s+\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)",
+                r"Importe\s+total\s+transferido[^<]*?\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)",
+                r"\$([\d,]+\.\d{2})\s+(MXN|USD|EUR)",
+            ]
+            for pattern in patterns:
+                match = re.search(pattern, normalized, re.IGNORECASE)
+                if match:
+                    try:
+                        amount = float(match.group(1).replace(",", ""))
+                        currency = match.group(2).upper()
+                        break
+                    except ValueError:
+                        continue
 
-        for pattern in patterns:
-            match = re.search(pattern, body, re.IGNORECASE)
-            if match:
+        amount_mxn = amount if currency == "MXN" else None
+        if currency != "MXN":
+            mxn_match = re.search(
+                r"\$([\d,]+\.\d{2})\s*MXN",
+                normalized,
+                re.IGNORECASE,
+            )
+            if mxn_match:
                 try:
-                    amount = float(match.group(1).replace(",", ""))
-                    currency = match.group(2).upper()
-                    return amount, currency
+                    amount_mxn = float(mxn_match.group(1).replace(",", ""))
                 except ValueError:
-                    continue
-
-        return 0.0, "MXN"
+                    amount_mxn = None
+        return amount, currency, amount_mxn
 
     @staticmethod
     def _extract_merchant(body: str, subject: str) -> Optional[str]:
