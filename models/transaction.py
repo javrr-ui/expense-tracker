@@ -13,10 +13,34 @@ from sqlmodel import Field, SQLModel
 from pydantic import BaseModel
 
 
+class TransactionCategoryUpdate(BaseModel):
+    """Manual category assignment."""
+
+    category_id: Optional[int] = None
+    subcategory_id: Optional[int] = None
+
+
+class TransactionUpdate(BaseModel):
+    """Partial update for notes, tags, kind, account, and category."""
+
+    category_id: Optional[int] = None
+    subcategory_id: Optional[int] = None
+    notes: Optional[str] = None
+    tags: Optional[list[str]] = None
+    kind: Optional[str] = None
+    account_id: Optional[int] = None
+    excluded_from_budget: Optional[bool] = None
+    reimbursable: Optional[bool] = None
+    description: Optional[str] = None
+    amount: Optional[float] = None
+    date: Optional[datetime] = None
+    merchant: Optional[str] = None
+
+
 class TransactionCreate(BaseModel):
     """Data model for creating a new transaction."""
 
-    email_id: str
+    email_id: str = ""
     date: Optional[datetime] = None
     amount: float
     description: str = ""
@@ -25,6 +49,15 @@ class TransactionCreate(BaseModel):
     merchant: Optional[str] = None
     reference: Optional[str] = None
     status: str = "approved"
+    notes: Optional[str] = None
+    tags: Optional[list[str]] = None
+    kind: Optional[str] = None
+    account_id: Optional[int] = None
+    source: str = "email"
+    excluded_from_budget: bool = False
+    reimbursable: bool = False
+    currency: str = "MXN"
+    amount_mxn: Optional[float] = None
 
 
 class Transaction(SQLModel, table=True):
@@ -59,8 +92,20 @@ class Transaction(SQLModel, table=True):
     type: str
     category_id: Optional[int] = Field(default=None, foreign_key="category.id")
     subcategory_id: Optional[int] = Field(default=None, foreign_key="subcategory.id")
+    category_source: str | None = Field(default=None, max_length=16)
+    category_locked: bool = Field(default=False)
     merchant: str | None = None
     reference: str | None = None
+    notes: str | None = None
+    tags: str | None = None
+    kind: str | None = Field(default=None, max_length=16)
+    account_id: int | None = Field(default=None, foreign_key="accounts.id")
+    source: str = Field(default="email", max_length=16)
+    balance_applied: bool = Field(default=False)
+    excluded_from_budget: bool = Field(default=False)
+    reimbursable: bool = Field(default=False)
+    currency: str = Field(default="MXN", max_length=3)
+    amount_mxn: float | None = Field(default=None)
 
     def __str__(self) -> str:
         date_str = self.date.strftime("%Y-%m-%d %H:%M:%S") if self.date else "None"

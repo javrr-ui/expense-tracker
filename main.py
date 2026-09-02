@@ -14,8 +14,9 @@ It runs as a standalone script and is intended to be executed periodically
 import logging
 
 from constants.banks import SupportedBanks, bank_emails
-from core.fetch_emails import get_message, list_messages, parse_email, save_email_body
+from core.fetch_emails import extract_pdf_attachments, get_message, list_messages, parse_email, save_email_body
 from core.gmail_service import get_gmail_service
+from core.services.statement_service import StatementService
 from core.services.transaction_service import TransactionService
 from core.google_auth import get_credentials
 from core.logging_config import setup_logging
@@ -67,6 +68,7 @@ def run_sync():
 
     db = Database()
     transaction_service = TransactionService(db)
+    statement_service = StatementService(db)
     creds = get_credentials()
     service = get_gmail_service(creds)
 
@@ -92,6 +94,16 @@ def run_sync():
             transaction = parser.parse(email_message, msg_id)
             if transaction:
                 transaction_service.save_transaction(transaction)
+
+            if getattr(parser, "bank_name", None) == SupportedBanks.NUBANK:
+                for filename, data in extract_pdf_attachments(msg):
+                    statement_service.ingest_from_email(
+                        email_id=msg_id,
+                        filename=filename,
+                        data=data,
+                        bank_name=SupportedBanks.NUBANK,
+                        subject=email_message.get("subject", ""),
+                    )
 
         logger.info("Process completed")
     except Exception as e:

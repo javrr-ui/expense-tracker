@@ -16,6 +16,8 @@ from core.parsers.rappi import RappiParser
 from core.parsers.banorte import BanorteParser
 from core.parsers.mercado_pago import MercadoPagoParser
 from core.parsers.paypal import PayPalParser
+from core.parsers.didi import DidiParser
+from core.parsers.banamex import BanamexParser
 
 logger = logging.getLogger("expense_tracker")
 
@@ -26,6 +28,8 @@ PARSERS = {
     SupportedBanks.BANORTE: BanorteParser(),
     SupportedBanks.MERCADO_PAGO: MercadoPagoParser(),
     SupportedBanks.PAYPAL: PayPalParser(),
+    SupportedBanks.DIDI: DidiParser(),
+    SupportedBanks.BANAMEX: BanamexParser(),
 }
 
 
@@ -42,6 +46,8 @@ class ParserHelper:
         | BanorteParser
         | MercadoPagoParser
         | PayPalParser
+        | DidiParser
+        | BanamexParser
         | None
     ):
         """

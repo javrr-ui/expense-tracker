@@ -111,6 +111,23 @@ def _decode_payload(part):
         return "[Error al decodificar el cuerpo del email]"
 
 
+def extract_pdf_attachments(email_msg) -> list[tuple[str, bytes]]:
+    """Return (filename, bytes) for PDF parts, including inline attachments."""
+    attachments: list[tuple[str, bytes]] = []
+    if not getattr(email_msg, "walk", None):
+        return attachments
+    for part in email_msg.walk():
+        filename = part.get_filename() or ""
+        content_type = (part.get_content_type() or "").lower()
+        if content_type != "application/pdf" and not filename.lower().endswith(".pdf"):
+            continue
+        payload = part.get_payload(decode=True)
+        if not payload:
+            continue
+        attachments.append((filename or "statement.pdf", payload))
+    return attachments
+
+
 def save_email_body(
     email_message: dict, msg_id: str, *, prefer_html: bool = True
 ) -> Path | None:

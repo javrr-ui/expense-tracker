@@ -23,6 +23,29 @@ class SupportedBanks(StrEnum):
     BANORTE = "banorte"
     MERCADO_PAGO = "mercado_pago"
     AMEX = "amex"
+    DIDI = "didi"
+    BANAMEX = "banamex"
+
+
+BANK_DISPLAY_NAMES = {
+    SupportedBanks.HEY_BANCO: "Hey Banco",
+    SupportedBanks.NUBANK: "Nu",
+    SupportedBanks.RAPPI: "RappiCard",
+    SupportedBanks.PAYPAL: "PayPal",
+    SupportedBanks.BANORTE: "Banorte",
+    SupportedBanks.MERCADO_PAGO: "Mercado Pago",
+    SupportedBanks.AMEX: "American Express",
+    SupportedBanks.DIDI: "DiDi",
+    SupportedBanks.BANAMEX: "Banamex",
+}
+
+
+def bank_display_name(bank_name: str) -> str:
+    """Human-readable bank name for API clients (web and future mobile)."""
+    try:
+        return BANK_DISPLAY_NAMES[SupportedBanks(bank_name)]
+    except ValueError:
+        return bank_name
 
 
 bank_emails = {
@@ -48,5 +71,15 @@ bank_emails = {
     ],
     SupportedBanks.BANORTE: ["notificaciones@banorte.com"],
     SupportedBanks.MERCADO_PAGO: ["info@mercadopago.com"],
-    SupportedBanks.AMEX: ["AmericanExpress@welcome.americanexpress.com"]
+    SupportedBanks.AMEX: ["AmericanExpress@welcome.americanexpress.com"],
+    SupportedBanks.DIDI: [
+        "noreply@didiglobal.com",
+        "noreply@mx.didiglobal.com",
+        "didi@mx.didiglobal.com",
+        "didiglobal.com",
+    ],
+    SupportedBanks.BANAMEX: [
+        "notificaciones@banamex.com",
+        "notificaciones@citibanamex.com",
+    ],
 }

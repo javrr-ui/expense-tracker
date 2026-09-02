@@ -13,12 +13,20 @@ import logging
 from contextlib import contextmanager
 from sqlmodel import create_engine, SQLModel, Session
 
+from sqlalchemy.pool import StaticPool
+
 from models.bank import Bank
 from models.category import Category
 from models.subcategory import Subcategory
 from models.transaction import Transaction
 from models.account import Account
 from models.account_type import AccountType
+from models.balance_snapshot import BalanceSnapshot
+from models.category_rule import CategoryRule
+from models.statement import Statement
+from models.budget import Budget
+from models.payment_coverage import PaymentCoverage
+from database.migrations import run_migrations
 
 # These imports ensure SQLModel discovers all table definitions
 __all__ = [
@@ -29,6 +37,11 @@ __all__ = [
     "Transaction",
     "Account",
     "AccountType",
+    "BalanceSnapshot",
+    "CategoryRule",
+    "Statement",
+    "Budget",
+    "PaymentCoverage",
 ]
 
 
@@ -56,12 +69,16 @@ class Database:
             sqlite3.Error: If connection or schema creation fails.
         """
         try:
-            self.engine = create_engine(
-                url=db_url,
-                echo=False,
-            )
+            engine_kwargs: dict = {"echo": False}
+            if db_url.startswith("sqlite"):
+                engine_kwargs["connect_args"] = {"check_same_thread": False}
+                if ":memory:" in db_url or db_url in {"sqlite://", "sqlite:///:memory:"}:
+                    engine_kwargs["poolclass"] = StaticPool
+
+            self.engine = create_engine(url=db_url, **engine_kwargs)
 
             SQLModel.metadata.create_all(self.engine)
+            run_migrations(self.engine)
             logger.info("Database initialized: %s", db_url)
         except Exception as e:
             logger.error("Database initialization failed: %s", e)
