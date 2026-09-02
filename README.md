@@ -9,27 +9,26 @@ Actualmente soporta:
 - **RappiCard** – notificaciones de compras, transferencias y pagos
 - **Banorte** – transferencias SPEI salientes
 - **Mercado pago** - transferencias SPEI salientes
+- **DiDi** – pagos de DiDi Préstamos (y depósitos cuando el correo trae el monto)
+- **Banamex** – compras con tarjeta y depósitos SPEI (`notificaciones@banamex.com`)
 
 ## Soporte futuro para más bancos
 
 El proyecto está diseñado para ser fácilmente extensible. Los próximos bancos que se planea agregar son:
 
-- **PayPal** – alertas de compras y pagos enviados
-- **DiDi Prestamos** - Depositos y pagos de prestamos
-- **Banamex** - Compras, transferencias y pago de tarjeta
 - **American Express** - Compras y pago de tarjeta
 
 ## Características
 
 - Conexión segura a Gmail vía OAuth 2.0
 - Búsqueda global de correos de los bancos soportados
-- Parsers específicos por banco
-- Guardado automático de cuerpos de email en disco (`data/`) para depuración y desarrollo de parsers
-- Base de datos SQLite con:
-  - Tabla para almacenar transacciones realizadas
-  - Tablas preparadas para categorías y subcategorías (próxima funcionalidad)
-- Logging detallado
-- Arquitectura limpia y extensible
+- Parsers específicos por banco (incluye DiDi)
+- Cuentas (crédito, préstamo, cheques, monedero) con saldo por snapshot + deltas
+- Estados de cuenta PDF (Nu primero; subida manual y adjuntos de Gmail)
+- Alta manual de transacciones, notas, tags, reembolsable
+- Categorías, reglas automáticas y presupuesto vs real
+- Recordatorios de pago (vencido / pronto / programado)
+- API JSON compartida por la web y un futuro cliente móvil
 
 ## Interfaz Gráfica (Frontend)
 
