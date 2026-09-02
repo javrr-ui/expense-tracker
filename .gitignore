@@ -26,6 +26,11 @@ __pycache__/
 data/*.html
 data/*.txt
 
+# Bank statements contain personal data
+data/statements/
+Nu *.pdf
+*.pdf
+
 
 #Serena
 .serena

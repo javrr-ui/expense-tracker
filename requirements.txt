@@ -9,3 +9,5 @@ unidecode
 logging
 sqlmodel
 fastapi[standard]
+pypdf
+pdfplumber
