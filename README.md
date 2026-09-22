@@ -9,8 +9,26 @@ Actualmente soporta:
 - **RappiCard** – notificaciones de compras, transferencias y pagos
 - **Banorte** – transferencias SPEI salientes
 - **Mercado pago** - transferencias SPEI salientes
-- **DiDi** – pagos de DiDi Préstamos (y depósitos cuando el correo trae el monto)
+- **DiDi Préstamos** – ver sección abajo
 - **Banamex** – compras con tarjeta y depósitos SPEI (`notificaciones@banamex.com`)
+
+## DiDi Préstamos (parser)
+
+Senders enrutados a `DidiParser`: `noreply@didiglobal.com`, `DiDi@mx.didiglobal.com`.
+
+### Soportado
+
+| Tipo | Señales | Resultado |
+| --- | --- | --- |
+| Pago de cuota | Asunto `Pago recibido` + cuerpo `Recibimos tu pago de MXN$…` y `vence el YYYY-MM-DD` | **expense** (`DiDi Préstamos`), reference = siguiente vencimiento |
+| Depósito con principal | Asunto de depósito + cuerpo con `monto del préstamo MXN$…` | **income** con ese monto |
+
+### Ignorado (skip)
+
+- Depósito **sin** monto principal (solo cuotas / fechas de pago)
+- Estado de cuenta, Invitación Reembolso, recordatorios (`Recuerda…`, vencido), marketing DiDi Card / promos
+
+Fixtures: `tests/test_didi_parser.py` (sin Gmail live). Idempotencia por `email_id`: `tests/test_sync_idempotency.py`.
 
 ## Soporte futuro para más bancos
 
