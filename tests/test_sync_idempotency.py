@@ -6,7 +6,7 @@ AC4: fixtures/in-memory DB only — no Gmail live
 """
 
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from core.parsers.parser_helper import ParserHelper
@@ -32,7 +32,7 @@ def _tx(email_id: str, amount: float = 100.0) -> TransactionCreate:
         amount=amount,
         description="Compra test fixture",
         type="expense",
-        date=datetime(2026, 9, 21, 12, 0, 0),
+        date=datetime(2026, 9, 21, 12, 0, 0, tzinfo=timezone.utc),
         merchant="FIXTURE STORE",
         reference="ref-1",
     )
@@ -50,8 +50,8 @@ def test_ac2_same_email_id_is_idempotent():
                     select(Transaction).where(Transaction.email_id == "gmail-msg-abc")
                 )
             )
-        assert len(rows) == 1
-        assert rows[0].amount == 100.0
+            assert len(rows) == 1
+            assert rows[0].amount == 100.0
 
 
 def test_ac2_distinct_email_ids_create_two_rows():
@@ -74,5 +74,9 @@ def test_ac4_suite_uses_in_memory_db_not_live_gmail():
     import tests.test_sync_idempotency as mod
 
     src = Path(mod.__file__).read_text(encoding="utf-8")
-    assert "googleapiclient" not in src
-    assert "get_gmail_service" not in src
+    for line in src.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("assert ") or stripped.startswith("#"):
+            continue
+        assert "googleapiclient" not in stripped
+        assert "get_gmail_service" not in stripped
